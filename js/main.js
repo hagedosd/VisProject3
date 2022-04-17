@@ -4,51 +4,6 @@ d3.csv('data/himym-dialogues.csv')
 
     // Create an instance of each chart
     barChartAppearances = new BarChartAppearances({parentElement: '#barchartAppearances'}, data);
-    
-    // let result = filterData(null, null, null, data);
-    // let episodes = result[0];
-    // let characters = result[1];
-    // console.log("data below is relevent to whole series")
-    // console.log(episodes);
-    // console.log(characters);
-
-    
-    //Examples of filtering on selection
-
-    //selecting a character -> which episodes/seasons they appear in, how much they speak in these episodes/seasons
-
-    // result = filterData("Ted", null, null, data);
-    // // result = filterData(null, null, null, data);
-    // episodes = result[0];
-    // characters = result[1];
-    // console.log("data below is only going to relevent to Ted")
-    // console.log(episodes);
-    // console.log(characters);
-
-    // //selecting a episode or a season -> which characters eppeared, who spoke most often etc
-    
-    // result = filterData(null, "1", null, data);
-    // episodes = result[0];
-    // characters = result[1];
-    // console.log("data below is only going to relevent to Season 1")
-    // console.log(episodes);
-    // console.log(characters);
-
-    // result = filterData(null, null, "8", data);
-    // episodes = result[0];
-    // characters = result[1];
-    // console.log("data below is only going to relevent to 8th episodes of seasons")
-    // console.log(episodes);
-    // console.log(characters);
-
-    // //all filters applied
-
-    // result = filterData("Lily", "3", "4", data);
-    // episodes = result[0];
-    // characters = result[1];
-    // console.log("data below is only going to relevent to Lily in Season 3 episode 4")
-    // console.log(episodes);
-    // console.log(characters);
 
 }).catch(error => console.error(error));
 
@@ -99,6 +54,47 @@ function filterData(character, season, episode, data) {
     return [episodes , characters];
 }
 
-function testfunc(){
-    return 5*5;
-}
+// let result = filterData(null, null, null, data);
+    // let episodes = result[0];
+    // let characters = result[1];
+    // console.log("data below is relevent to whole series")
+    // console.log(episodes);
+    // console.log(characters);
+
+    
+    //Examples of filtering on selection
+
+    //selecting a character -> which episodes/seasons they appear in, how much they speak in these episodes/seasons
+
+    // result = filterData("Ted", null, null, data);
+    // // result = filterData(null, null, null, data);
+    // episodes = result[0];
+    // characters = result[1];
+    // console.log("data below is only going to relevent to Ted")
+    // console.log(episodes);
+    // console.log(characters);
+
+    // //selecting a episode or a season -> which characters eppeared, who spoke most often etc
+    
+    // result = filterData(null, "1", null, data);
+    // episodes = result[0];
+    // characters = result[1];
+    // console.log("data below is only going to relevent to Season 1")
+    // console.log(episodes);
+    // console.log(characters);
+
+    // result = filterData(null, null, "8", data);
+    // episodes = result[0];
+    // characters = result[1];
+    // console.log("data below is only going to relevent to 8th episodes of seasons")
+    // console.log(episodes);
+    // console.log(characters);
+
+    // //all filters applied
+
+    // result = filterData("Lily", "3", "4", data);
+    // episodes = result[0];
+    // characters = result[1];
+    // console.log("data below is only going to relevent to Lily in Season 3 episode 4")
+    // console.log(episodes);
+    // console.log(characters);

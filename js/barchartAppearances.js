@@ -39,7 +39,7 @@ class BarChartAppearances {
             .text("Appearances");
 
         vis.chart.append("text")
-            .attr("y", -99)
+            .attr("y", -50)
             .attr("x", -vis.height / 2 - 50)
             .attr("text-anchor", "end")
             .attr('font-size', '14px')
@@ -53,22 +53,28 @@ class BarChartAppearances {
 
     updateVis() {
         let vis = this;
+        vis.episodeCounts = new Array;
+        vis.characterList = ["Ted", "Lily", "Marshall", "Robin", "Producer"];
 
-        vis.filterResult = filterData("Ted", "1", null, vis.data);
-        // vis.test = testfunc();
-        console.log("All Ted data for season 1:", vis.filterResult);
+        // This creates an array the length of vis.characterList with values starting from 0 and counting up
+        vis.characterNums = Array.from(Array(vis.characterList.length).keys());
+        console.log("This is characterNums:", vis.characterNums);
+
+        for (let i = 0; i < vis.characterList.length; i++){
+            vis.filterResult = filterData(vis.characterList[i], "1", null, vis.data);
+            vis.episodeCounts.push(vis.filterResult[0].length);
+            console.log(vis.characterList[i], "data for season 1:", vis.filterResult);
+            console.log(vis.characterList[i], "appeared in: ", vis.episodeCounts[i], "episodes.");
+        }
         
         // scales
         vis.xScale = d3.scaleLinear()
-            // .domain([0, d3.max(vis.phylumCount)])
+            .domain([0, d3.max(vis.episodeCounts)])
             .range([0, vis.width]);
         vis.yScale = d3.scaleBand()
-            // .domain(vis.phylumNum)
             .paddingInner(0.15)
-            // .domain(vis.phylumList)  
+            .domain(vis.characterList) 
             .range([0, vis.height]);
-
-        // console.log('max count in a month', d3.max(vis.phylumCount));
 
         // init axis
         vis.xAxis = d3.axisBottom(vis.xScale)
@@ -94,34 +100,32 @@ class BarChartAppearances {
 
     renderVis() {
         let vis = this;
-        // console.log('Counts for each month:', vis.phylumCount);
-        // console.log(vis.phylumNum);
-        // Add rectangles
-        // vis.rect = vis.chart.selectAll('rect')
-        //     .data(vis.phylumNum)
-        //     .enter()
-        //     .append('rect')
-        //         .attr('class', 'bar')
-        //         .attr('fill', "#59981A")
-        //         .attr('width', d => vis.xScale(vis.phylumCount[d]))
-        //         // .attr('height', d => vis.height - vis.yScale(vis.phylumCount[d]))
-        //         .attr('height', vis.yScale.bandwidth())
-        //         .attr('y', d => vis.yScale(vis.phylumList[d])+75)
-        //         .attr('x', 1);
 
-        // vis.rect.on('mouseover', (event,d) => {
-        //     d3.select('#tooltip')
-        //         .style('display', 'block')
-        //         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
-        //         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
-        //         .html(`
-        //         <div class="tooltip-title">${vis.phylumList[d]}</div>
-        //         <div><i>${vis.phylumCount[d]} samples collected</i></div>
-        //         `);
-        // })
-        // .on('mouseleave', () => {
-        //     d3.select('#tooltip').style('display', 'none');
-        // });
+        // Add rectangles
+        vis.rect = vis.chart.selectAll('rect')
+            .data(vis.characterNums)
+            .enter()
+            .append('rect')
+                .attr('class', 'bar')
+                .attr('fill', "#59981A")
+                .attr('width', d => vis.xScale(vis.episodeCounts[d]))
+                .attr('height', vis.yScale.bandwidth())
+                .attr('y', d => vis.yScale(vis.characterList[d])+75)
+                .attr('x', 1);
+
+        vis.rect.on('mouseover', (event,d) => {
+            d3.select('#tooltip')
+                .style('display', 'block')
+                .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+                .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                .html(`
+                <div class="tooltip-title">${vis.characterList[d]}</div>
+                <div><i>Appeared in ${vis.episodeCounts[d]} episodes.</i></div>
+                `);
+        })
+        .on('mouseleave', () => {
+            d3.select('#tooltip').style('display', 'none');
+        });
 
         // Update axis
         vis.xAxisGroup.call(vis.xAxis);
