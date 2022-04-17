@@ -48,6 +48,12 @@ class BarChartAppearances {
             .text("Characters");
 
 
+        let result = filterData(null, null, null, vis.data);
+        let episodes = result[0];
+        let characters = result[1];
+        console.log("data below is relevent to whole series")
+        console.log(episodes);
+        console.log(characters);
         vis.updateVis();
     }
 
