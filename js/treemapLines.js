@@ -17,30 +17,20 @@ class TreeMapLines {
         let vis = this;
 
         vis.filteredData = filterData(null,null,null,vis.data)[1];
-        console.log('pie filtered data: ', vis.filteredData)
-        vis.pieData = new Array;
+        vis.processedData = [];
         let otherCharLineCount = 0;
 
         // Only show characters with more than 50 lines in the pie chart
-        // The rest will be combined into an "other" wedge
+        // The rest will be combined into an "other" group
         vis.filteredData.forEach(d=> {
             if (d.numLines > 50) {
-                vis.pieData.push(d);
+                vis.processedData.push(d);
             }
             else {
                 otherCharLineCount += 1;
             }
         });
-        vis.pieData.push({name: "Other", numLines: otherCharLineCount})
-
-        console.log('pie data: ', vis.pieData)
-
-        vis.characters = [];
-        vis.pieDataStats = [];
-        vis.pieData.forEach(d=>{
-            vis.characters.push(d.name);
-            vis.pieDataStats.push(d.numLines);
-        });
+        vis.processedData.push({name: "Other", numLines: otherCharLineCount})
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
         vis.radius = vis.config.containerHeight / 2 - vis.config.margin.top;
@@ -66,37 +56,21 @@ class TreeMapLines {
 
         // scales
         // set the color scale
-        // vis.color = d3.scaleOrdinal()
-        //     .domain(vis.pieData)
-        //     .range(["#3D550C", "#81B622"]);
         vis.color = d3.scaleOrdinal()
-            .domain(vis.pieData)
+            .domain(vis.processedData)
             .range(d3.schemeSet2);
 
+        // Set all data as top level children
         vis.treeData = {
-            // children: vis.pieData.map(d=> ({value: d}))
-            children: vis.pieData
+            children: vis.processedData
         }
-        console.log('tree data: ', vis.treeData)
 
+        // Calculate the root and build the treemap
         vis.root = d3.hierarchy(vis.treeData).sum(d=>d.numLines) // Here the size of each leave is given in the 'value' field in input data
         vis.treemap = d3.treemap()
             .size([vis.width, vis.height])
             .padding(2)
             (vis.root);
-
-
-
-        console.log('root leaves: ', vis.root.leaves())
-
-        // Compute the position of each group on the pie:
-        vis.pie = d3.pie();
-        vis.data_ready = vis.pie(vis.pieDataStats);
-
-        // shape helper to build arcs:
-        vis.arcGenerator = d3.arc()
-            .innerRadius(0)
-            .outerRadius(vis.radius);
 
         vis.renderVis();
     }
@@ -104,61 +78,53 @@ class TreeMapLines {
     renderVis(){
         let vis = this;
 
-        // vis.slices = vis.chart.selectAll('mySlices')
-        //     .data(vis.data_ready)
-        //     .enter()
-        //     .append('path')
-        //         .attr('d', d3.arc()
-        //             .innerRadius(0)
-        //             .outerRadius(vis.radius)
-        //         )
-        //         .attr('fill', function(d, i){ return(vis.color(i)) })
-        //         .attr("stroke", "black")
-        //         .style("stroke-width", "2px")
-        //         .style("opacity", 0.7);
-
+        // Draw rects for tree map
         vis.rect = vis.chart.selectAll('rect')
             .data(vis.root.leaves())
             .enter()
             .append('rect')
-                .attr('x', function (d) { return d.x0; })
-                .attr('y', function (d) { return d.y0; })
-                .attr('width', function (d) { return d.x1 - d.x0; })
-                .attr('height', function (d) { return d.y1 - d.y0; })
+                .attr('x', d => d.x0)
+                .attr('y', d => d.y0)
+                .attr('width', d => d.x1 - d.x0)
+                .attr('height', d => d.y1 - d.y0)
                 .style("stroke", "black")
-                .style("fill", function(d, i){ return(vis.color(i)) })
+                .style("fill", (d,i) => vis.color(i));
 
+        // Add text in tree map if cells are bigger than mix/max height
+        // If the cells aren't, set opacity of text to 0
         const minHeight = 80
         const minWidth = 45;
-        vis.chart.selectAll("text")
+        vis.rectText = vis.chart.selectAll("text")
             .data(vis.root.leaves())
             .enter()
             .append("text")
-                .attr("x", function(d){ return d.x0+5})    // +10 to adjust position (more right)
-                .attr("y", function(d){ return d.y0+20})    // +20 to adjust position (lower)
-                .text(function(d){ return d.data.name })
+                .attr("x", d => d.x0+5)    // +5 to adjust position (more right)
+                .attr("y", d => d.y0+20)    // +20 to adjust position (lower)
+                .text(d => d.data.name)
                 .attr("font-size", "15px")
                 .attr("fill", "black")
-                .attr('opacity', function(d){
+                .attr('opacity', d => {
                         if ( d.x1 - d.x0 <= minWidth || d.y1 - d.y0 <= minHeight ) {
                             return 0
                         };
                         return 1;
                     });
-
-        // const minHeight = 80
-        // const minWidth = 45;
-        // vis.chart.selectAll("text")
-        //     .data(vis.root.leaves())
-        //     .style('opacity', function(d){
-        //         if ( d.dx <= minWidth || d.dy <= minHeight ) {
-        //             return 0
-        //         };
-        //         return 1;
-        //     });
-
+        
+        // Add tooltips on mouseover for rect AND text, because even if the text is
+        // invisible it still takes up room
         vis.rect.on('mouseover', (event,d) => {
-            console.log('mouseover: ', d)
+            d3.select('#tooltip')
+                .style('display', 'block')
+                .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+                .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                .html(`
+                <div class="tooltip-title">${d.data.name} had ${d.data.numLines} lines.</div>
+                `);
+        })
+        .on('mouseleave', () => {
+            d3.select('#tooltip').style('display', 'none');
+        });
+        vis.rectText.on('mouseover', (event,d) => {
             d3.select('#tooltip')
                 .style('display', 'block')
                 .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
