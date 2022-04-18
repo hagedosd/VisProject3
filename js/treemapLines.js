@@ -74,17 +74,18 @@ class TreeMapLines {
             .range(d3.schemeSet2);
 
         vis.treeData = {
-            children: vis.pieData.map(d=> ({value: d.numLines}))
+            // children: vis.pieData.map(d=> ({value: d}))
+            children: vis.pieData
         }
+        console.log('tree data: ', vis.treeData)
 
-        vis.root = d3.hierarchy(vis.treeData).sum(d=>d.value) // Here the size of each leave is given in the 'value' field in input data
+        vis.root = d3.hierarchy(vis.treeData).sum(d=>d.numLines) // Here the size of each leave is given in the 'value' field in input data
         vis.treemap = d3.treemap()
             .size([vis.width, vis.height])
             .padding(2)
             (vis.root);
 
 
-        console.log('tree data: ', vis.treeData)
 
         console.log('root leaves: ', vis.root.leaves())
 
@@ -125,20 +126,49 @@ class TreeMapLines {
                 .attr('width', function (d) { return d.x1 - d.x0; })
                 .attr('height', function (d) { return d.y1 - d.y0; })
                 .style("stroke", "black")
-                .style("fill", "slateblue")
+                .style("fill", function(d, i){ return(vis.color(i)) })
 
-        // vis.slices.on('mouseover', (event,d) => {
-        //     console.log('mouseover: ', d)
-        //     d3.select('#tooltip')
-        //         .style('display', 'block')
-        //         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
-        //         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
-        //         .html(`
-        //         <div class="tooltip-title">${vis.characters[d.index]} had ${d.value} lines.</div>
-        //         `);
-        // })
-        // .on('mouseleave', () => {
-        //     d3.select('#tooltip').style('display', 'none');
-        // });
+        const minHeight = 80
+        const minWidth = 45;
+        vis.chart.selectAll("text")
+            .data(vis.root.leaves())
+            .enter()
+            .append("text")
+                .attr("x", function(d){ return d.x0+5})    // +10 to adjust position (more right)
+                .attr("y", function(d){ return d.y0+20})    // +20 to adjust position (lower)
+                .text(function(d){ return d.data.name })
+                .attr("font-size", "15px")
+                .attr("fill", "black")
+                .attr('opacity', function(d){
+                        if ( d.x1 - d.x0 <= minWidth || d.y1 - d.y0 <= minHeight ) {
+                            return 0
+                        };
+                        return 1;
+                    });
+
+        // const minHeight = 80
+        // const minWidth = 45;
+        // vis.chart.selectAll("text")
+        //     .data(vis.root.leaves())
+        //     .style('opacity', function(d){
+        //         if ( d.dx <= minWidth || d.dy <= minHeight ) {
+        //             return 0
+        //         };
+        //         return 1;
+        //     });
+
+        vis.rect.on('mouseover', (event,d) => {
+            console.log('mouseover: ', d)
+            d3.select('#tooltip')
+                .style('display', 'block')
+                .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+                .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                .html(`
+                <div class="tooltip-title">${d.data.name} had ${d.data.numLines} lines.</div>
+                `);
+        })
+        .on('mouseleave', () => {
+            d3.select('#tooltip').style('display', 'none');
+        });
     }
 }
