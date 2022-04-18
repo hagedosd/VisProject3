@@ -47,7 +47,6 @@ class BarChartAppearances {
             .attr('font-weight', 'bold')
             .text("Characters");
 
-
         vis.updateVis();
     }
 

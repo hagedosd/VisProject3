@@ -56,11 +56,11 @@ function filterData(character, season, episode, data) {
 }
 
 // let result = filterData(null, null, null, data);
-    // let episodes = result[0];
-    // let characters = result[1];
-    // console.log("data below is relevent to whole series")
-    // console.log(episodes);
-    // console.log(characters);
+//     let episodes = result[0];
+//     let characters = result[1];
+//     console.log("data below is relevent to whole series")
+//     console.log(episodes);
+//     console.log(characters);
 
     
     //Examples of filtering on selection
