@@ -19,20 +19,19 @@
 
         <!--For tooltips-->
         <div id="tooltip"></div>
-        <div id="tooltip-map" style="display:none"></div>
+        <!--<div id="tooltip-map" style="display:none"></div> -->
+        <div id="topBarCharts" class="row">
+            <!--Bar chart for character appearances-->
+            <div id="barchartAppearancesDiv" class="column">
+                <h2>Appearances by Character in Season 1</h2> 
+                <svg id="barchartAppearances"></svg>
+            </div>
 
-        <!--Bar chart for character appearances-->
-        <div id="barchartAppearancesDiv">
-            <hr>
-            <h2>Appearances by Character in Season 1</h2> 
-            <svg id="barchartAppearances"></svg>
-        </div>
-
-        <!--Bar chart for character line counts-->
-        <div id="barchartLinesDiv">
-            <hr>
-            <h2>Lines by Character in Season 1</h2> 
-            <svg id="barchartLines"></svg>
+            <!--Bar chart for character line counts-->
+            <div id="barchartLinesDiv" class="column">
+                <h2>Lines by Character in Season 1</h2> 
+                <svg id="barchartLines"></svg>
+            </div>
         </div>
     </div>
     
