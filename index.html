@@ -16,10 +16,11 @@
                 <h3>Nathaniel Alter, Steven Hagedorn, Gabe Rapaport, and Jakob Wardega</h3>
             </div>
         </header>
-
+        <h3>Season: <select id="selectSeason"></select></h3>
+        <h3 id="selectEpisodeDiv"style="display:none">Episode: <select id="selectEpisode"></select></h3>
         <!--For tooltips-->
         <div id="tooltip"></div>
-        <!--<div id="tooltip-map" style="display:none"></div> -->
+
         <div id="topBarCharts" class="row">
             <!--Bar chart for character appearances-->
             <div id="barchartAppearancesDiv" class="column">
@@ -33,14 +34,19 @@
                 <svg id="barchartLines"></svg>
             </div>
         </div>
+        <h3>Character: <select id="selectCharacter"></select></h3>
     </div>
     
     <!-- D3 bundle -->
     <script src="js/d3.v6.min.js"></script>
+    <!-- JQUERY :)-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <!-- Our JS code -->
     <script src="js/main.js"></script>
     <script src="js/barchartAppearances.js"></script>
     <script src="js/barchartLines.js"></script>
+
+    
 </body>
 </html>
