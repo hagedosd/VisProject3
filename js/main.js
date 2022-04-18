@@ -5,7 +5,8 @@ d3.csv('data/himym-dialogues.csv')
     // Create an instance of each chart
     barChartAppearances = new BarChartAppearances({parentElement: '#barchartAppearances'}, data);
     barChartLines = new BarChartLines({parentElement: '#barchartLines'}, data);
-
+    pieChartLines = new PieChartLines({parentElement: '#piechartLines'}, data);
+    treeMapLines = new TreeMapLines({parentElement: '#treemapLines'}, data);
 }).catch(error => console.error(error));
 
 function filterData(character, season, episode, data) {
