@@ -1,4 +1,4 @@
-class BarChartAppearances {
+class BarChartLines {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
@@ -36,7 +36,7 @@ class BarChartAppearances {
             .attr("text-anchor", "right")
             .attr('font-size', '14px')
             .attr('font-weight', 'bold')
-            .text("Appearances");
+            .text("Lines");
 
         vis.chart.append("text")
             .attr("y", -50)
@@ -53,7 +53,7 @@ class BarChartAppearances {
 
     updateVis() {
         let vis = this;
-        vis.episodeCounts = new Array;
+        vis.lineCounts = new Array;
         vis.characterList = ["Ted", "Lily", "Marshall", "Robin", "Producer"];
 
         // This creates an array the length of vis.characterList with values starting from 0 and counting up
@@ -61,14 +61,14 @@ class BarChartAppearances {
 
         for (let i = 0; i < vis.characterList.length; i++){
             vis.filterResult = filterData(vis.characterList[i], "1", null, vis.data);
-            vis.episodeCounts.push(vis.filterResult[0].length);
+            vis.lineCounts.push(vis.filterResult[1][0]["numLines"]);
             // console.log(vis.characterList[i], "data for season 1:", vis.filterResult);
-            // console.log(vis.characterList[i], "appeared in: ", vis.episodeCounts[i], "episodes.");
+            // console.log(vis.characterList[i], "had: ", vis.lineCounts[i], "lines.");
         }
         
         // scales
         vis.xScale = d3.scaleLinear()
-            .domain([0, d3.max(vis.episodeCounts)])
+            .domain([0, d3.max(vis.lineCounts)])
             .range([0, vis.width]);
         vis.yScale = d3.scaleBand()
             .paddingInner(0.15)
@@ -107,7 +107,7 @@ class BarChartAppearances {
             .append('rect')
                 .attr('class', 'bar')
                 .attr('fill', "#59981A")
-                .attr('width', d => vis.xScale(vis.episodeCounts[d]))
+                .attr('width', d => vis.xScale(vis.lineCounts[d]))
                 .attr('height', vis.yScale.bandwidth())
                 .attr('y', d => vis.yScale(vis.characterList[d])+75)
                 .attr('x', 1);
@@ -119,7 +119,7 @@ class BarChartAppearances {
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .html(`
                 <div class="tooltip-title">${vis.characterList[d]}</div>
-                <div><i>Appeared in ${vis.episodeCounts[d]} episodes.</i></div>
+                <div><i>Had ${vis.lineCounts[d]} lines.</i></div>
                 `);
         })
         .on('mouseleave', () => {
