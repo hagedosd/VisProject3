@@ -1,3 +1,17 @@
+var epidsode_counts = [22,22,20,24,24,24,24,24,24];
+
+
+function compare_id( a, b )
+  {
+  if ( a.id < b.id){
+    return -1;
+  }
+  if ( a.id> b.id){
+    return 1;
+  }
+  return 0;
+}
+
 class ScatterPlot {
     constructor(_config, _data) {
         this.config = {
@@ -15,6 +29,7 @@ class ScatterPlot {
 
     initVis() {
         let vis = this;
+        
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
@@ -48,31 +63,65 @@ class ScatterPlot {
             .text("Episode");
 
 
-        vis.updateVis();
+       vis.updateVis();
     }
 
     updateVis() {
+        
         let vis = this;
-        vis.lineCounts = new Array;
-        vis.characterList = ["Ted", "Lily", "Marshall", "Robin", "Producer"];
 
-        // This creates an array the length of vis.characterList with values starting from 0 and counting up
-        vis.characterNums = Array.from(Array(vis.characterList.length).keys());
+        var tmp = [[],[],[],[],[],[],[],[],[]];
+        vis.data.forEach(d => {
+            if (d['character'] == 'Ted'){
+                //console.log(d);
+                tmp[d['season'] - 1].push(d);
+            }
+        });
 
-        for (let i = 0; i < vis.characterList.length; i++){
-            vis.filterResult = filterData(vis.characterList[i], "1", null, vis.data);
-            vis.lineCounts.push(vis.filterResult[1][0]["numLines"]);
-            // console.log(vis.characterList[i], "data for season 1:", vis.filterResult);
-            // console.log(vis.characterList[i], "had: ", vis.lineCounts[i], "lines.");
+      // console.log(tmp[0]);
+
+        var tmp_lst = [];
+        for(var i=0; i<9; i++){
+            tmp[i].forEach(d => {
+                d.id = (parseInt(d['season']) * 100) + parseInt(d['episode']);
+                tmp_lst.push(d);
+            });
         }
+        tmp_lst.sort(compare_id);
+
+        var count = 0;
+
+        var ret = [];
+
+        var id = tmp_lst[0]['id'];
+        tmp_lst.forEach(d => {
+            //console.log(id);
+            if (d.id == id)
+            {
+                count = count + 1;
+            }
+            else
+            {
+                ret.push({'season': Math.floor(id/100) ,'episode': id%100,'count':count, 'id': id, 'str': "S"+Math.floor(id/100)+"E"+id%100});
+                count = 1;
+                id = d.id;
+            }
+        });
+
+        vis.scatterplotData = ret;
+
+        
+
+
+
+        console.log(vis.scatterplotData);
         
         // scales
         vis.xScale = d3.scaleLinear()
-            .domain([0, d3.max(vis.lineCounts)])
+            .domain([0, d3.max(vis.scatterplotData.id)])
             .range([0, vis.width]);
-        vis.yScale = d3.scaleBand()
-            .paddingInner(0.15)
-            .domain(vis.characterList) 
+        vis.yScale = d3.scaleLinear()
+            .domain(0, d3.max(vis.scatterplotData.count)) 
             .range([0, vis.height]);
 
         // init axis
