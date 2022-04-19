@@ -5,6 +5,7 @@ d3.csv('data/himym-dialogues.csv')
     // Create an instance of each chart
     barChartAppearances = new BarChartAppearances({parentElement: '#barchartAppearances'}, data);
     barChartLines = new BarChartLines({parentElement: '#barchartLines'}, data);
+    treeMapAppearances = new TreeMapAppearances({parentElement: '#treemapAppearances'}, data);
     treeMapLines = new TreeMapLines({parentElement: '#treemapLines'}, data);
 }).catch(error => console.error(error));
 

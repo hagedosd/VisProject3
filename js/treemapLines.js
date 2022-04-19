@@ -17,6 +17,7 @@ class TreeMapLines {
         let vis = this;
 
         vis.filteredData = filterData(null,null,null,vis.data)[1];
+        console.log('lines filtered data: ', vis.filteredData)
         vis.processedData = [];
         let otherCharLineCount = 0;
 
@@ -78,6 +79,40 @@ class TreeMapLines {
     renderVis(){
         let vis = this;
 
+        // Function to wrap text if sentences are too long
+        function wrap(text, width) {
+            text.each(function () {
+                var text = d3.select(this),
+                    words = text.text().split(/\s+/).reverse(),
+                    word,
+                    line = [],
+                    lineNumber = 0,
+                    lineHeight = 1.1, // ems
+                    x = text.attr("x"),
+                    y = text.attr("y"),
+                    dy = 0, //parseFloat(text.attr("dy")),
+                    tspan = text.text(null)
+                                .append("tspan")
+                                .attr("x", x)
+                                .attr("y", y)
+                                .attr("dy", dy + "em");
+                while (word = words.pop()) {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = text.append("tspan")
+                                    .attr("x", x)
+                                    .attr("y", y)
+                                    .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                                    .text(word);
+                    }
+                }
+            });
+        }
+
         // Draw rects for tree map
         vis.rect = vis.chart.selectAll('rect')
             .data(vis.root.leaves())
@@ -101,6 +136,7 @@ class TreeMapLines {
                 .attr("x", d => d.x0+5)    // +5 to adjust position (more right)
                 .attr("y", d => d.y0+20)    // +20 to adjust position (lower)
                 .text(d => d.data.name)
+                .call(wrap, minWidth)
                 .attr("font-size", "15px")
                 .attr("fill", "black")
                 .attr('opacity', d => {
@@ -118,7 +154,8 @@ class TreeMapLines {
                 .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .html(`
-                <div class="tooltip-title">${d.data.name} had ${d.data.numLines} lines.</div>
+                <div class="tooltip-title">${d.data.name}</div>
+                <div><i>Had ${d.data.numLines} lines.</i></div>
                 `);
         })
         .on('mouseleave', () => {
@@ -130,7 +167,8 @@ class TreeMapLines {
                 .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .html(`
-                <div class="tooltip-title">${d.data.name} had ${d.data.numLines} lines.</div>
+                <div class="tooltip-title">${d.data.name}</div>
+                <div><i>Had ${d.data.numLines} lines.</i></div>
                 `);
         })
         .on('mouseleave', () => {
