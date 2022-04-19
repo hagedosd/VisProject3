@@ -5,12 +5,28 @@ d3.csv('data/himym-dialogues.csv')
     // Create an instance of each chart
     barChartAppearances = new BarChartAppearances({parentElement: '#barchartAppearances'}, data);
     barChartLines = new BarChartLines({parentElement: '#barchartLines'}, data);
+    treeMapAppearances = new TreeMapAppearances({parentElement: '#treemapAppearances'}, data);
+    treeMapLines = new TreeMapLines({parentElement: '#treemapLines'}, data);
 
     //gets all data for various init settings on page
     var initData = filterData(null,null,null,data);
     initSelects(initData);
 
 }).catch(error => console.error(error));
+
+//on option change update tree map
+function updateTreeAppearances(value) {
+    treeMapAppearances.updateTree(value);
+}
+function updateTreeLines(value) {
+    treeMapLines.updateTree(value);
+}
+
+// update html element
+function updateElement(id, value) {
+    console.log('Updating element! current value of ', id, document.getElementById(id).innerHTML)
+    document.getElementById(id).innerHTML = value;
+}
 
 //returns filtered data based on parameters, not well optimized but who cares?
 function filterData(character, season, episode, data) {
