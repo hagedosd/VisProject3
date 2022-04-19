@@ -1,5 +1,28 @@
-var epidsode_counts = [22,22,20,24,24,24,24,24,24];
+var episode_counts = [22,22,20,24,24,24,24,24,24];
 
+var fills = ['#0000A3','#DF265E','#1DC690','#FF2511']
+
+function fixId(id)
+{
+    var season =  Math.floor(id/100);
+    var episode = id%100;
+    var count = 0;
+
+    //console.log(season +', ' + episode);
+    var i;
+    for(i = 0; i < season - 1; i++)
+    {
+        for (var j = 0; j<episode_counts[i]; j++){
+            count++;
+        }
+    }
+    for (var k = 0; k<episode; k++){
+        count++;
+    }
+
+    //console.log(count);
+    return count;
+}
 
 function compare_id( a, b )
   {
@@ -51,16 +74,16 @@ class ScatterPlot {
             .attr("text-anchor", "right")
             .attr('font-size', '14px')
             .attr('font-weight', 'bold')
-            .text("Number of Lines Per Episode");
+            .text("Episode");
 
         vis.chart.append("text")
             .attr("y", -50)
-            .attr("x", -vis.height / 2 - 50)
+            .attr("x", -vis.height / 2 + 20)
             .attr("text-anchor", "end")
             .attr('font-size', '14px')
             .attr("transform", "rotate(-90)")
             .attr('font-weight', 'bold')
-            .text("Episode");
+            .text("Number of Lines Per Episode");
 
 
        vis.updateVis();
@@ -72,14 +95,14 @@ class ScatterPlot {
 
         var tmp = [[],[],[],[],[],[],[],[],[]];
         var ret = [];
-        var characters = ["Ted", "Barney"];
-        var i = 0;
-        for(i; i < characters.length; i++)
+        var characters = ["Ted",'Marshall'];
+    
+        for(var index = 0; index < characters.length; index++)
         {
-            console.log(i);
+            console.log(index);
             vis.data.forEach(d => {
                 
-                if (d['character'] == characters[i]){     //// change character here
+                if (d['character'] == characters[index]){     //// change character here
                     //console.log(d);
                     tmp[d['season'] - 1].push(d);
                 }
@@ -107,7 +130,8 @@ class ScatterPlot {
                 }
                 else
                 {
-                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'id': id, 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': characters[i]}); // name
+                    fixId(id);
+                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': characters[index]}); // name
                     count = 1;
                     id = d.id;
                 }
@@ -123,14 +147,19 @@ class ScatterPlot {
         console.log(vis.scatterplotData);
         
         // scales
-        var maxX = vis.scatterplotData.reduce((prev, current)=> ( (prev.id > current.id) ? prev : current),0)
-        var maxY = vis.scatterplotData.reduce((prev, current)=> ( (prev.numLines > current.numLines) ? prev : current),0)
+        var maxX = vis.scatterplotData.reduce((prev, current)=> ( (prev.id > current.id) ? prev : current),0);
+        var maxY = vis.scatterplotData.reduce((prev, current)=> ( (prev.numLines > current.numLines) ? prev : current),0);
+
+       // console.log(maxX.id);
+       // console.log(maxY.numLines);
+
         vis.xScale = d3.scaleLinear()
-            .domain([0, maxX])
+            .domain([0, maxX.id])
             .range([0, vis.width]);
+
         vis.yScale = d3.scaleLinear()
-            .domain([0, maxY]) 
-            .range([0, vis.height]);
+            .domain([0, maxY.numLines]) 
+            .range([vis.height, 0]);
 
         // init axis
         vis.xAxis = d3.axisBottom(vis.xScale)
@@ -157,7 +186,21 @@ class ScatterPlot {
     renderVis() {
         let vis = this;
 
-        // Add rectangles
+        // Add dots
+        vis.svg.append('g')
+        .selectAll("dot")
+        .data(vis.scatterplotData)
+        .enter()
+        .append('circle')
+        .attr('cx', function (d) {
+            //console.log(d.id);
+            //console.log(d.id);
+            return vis.xScale(d.id);
+        })
+        .attr('cy', function (d) {return vis.yScale(d.numLines)})
+        .attr('r', 3)
+        .attr("transform", "translate(" + 110 + "," + 40 + ")")
+        .style("fill", function (d) {return fills[d.color]});
         
 
         // vis.rect.on('mouseover', (event,d) => {
