@@ -10,3 +10,4 @@ Data visualizations class project 3 on TV show character speaking lines and inte
     Pie chart: Character list in selected episode/season & Top speaker in selected episode/season
 
 ## B Goals:
+    Word Cloud: Select character and show most common words and frequency of those words, common phrases or sentences, and changes in what they say by season.
