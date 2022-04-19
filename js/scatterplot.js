@@ -71,45 +71,51 @@ class ScatterPlot {
         let vis = this;
 
         var tmp = [[],[],[],[],[],[],[],[],[]];
-        vis.data.forEach(d => {
-            if (d['character'] == 'Ted'){     //// change character here
-                //console.log(d);
-                tmp[d['season'] - 1].push(d);
-            }
-        });
-
-      // console.log(tmp[0]);
-
-        var tmp_lst = [];
-        for(var i=0; i<9; i++){
-            tmp[i].forEach(d => {
-                d.id = (parseInt(d['season']) * 100) + parseInt(d['episode']);
-                tmp_lst.push(d);
-            });
-        }
-        tmp_lst.sort(compare_id);
-
-        var count = 0;
-
         var ret = [];
+        var characters = ["Ted", "Barney"];
+        var i = 0;
+        for(i; i < characters.length; i++)
+        {
+            console.log(i);
+            vis.data.forEach(d => {
+                
+                if (d['character'] == characters[i]){     //// change character here
+                    //console.log(d);
+                    tmp[d['season'] - 1].push(d);
+                }
+            });
 
-        var id = tmp_lst[0]['id'];
-        tmp_lst.forEach(d => {
-            //console.log(id);
-            if (d.id == id)
-            {
-                count = count + 1;
-            }
-            else
-            {
-                ret.push({'season': Math.floor(id/100) ,'episode': id%100,'count':count, 'id': id, 'str': "S"+Math.floor(id/100)+"E"+id%100});
-                count = 1;
-                id = d.id;
-            }
-        });
+            // console.log(tmp[0]);
 
+            var tmp_lst = [];
+            for(var i=0; i<9; i++){
+                tmp[i].forEach(d => {
+                    d.id = (parseInt(d['season']) * 100) + parseInt(d['episode']);
+                    tmp_lst.push(d);
+                });
+            }
+            tmp_lst.sort(compare_id);
+
+            var count = 0;
+            //console.log(characters[i]);
+            var id = tmp_lst[0]['id'];
+            tmp_lst.forEach(d => {
+                //console.log(id);
+                if (d.id == id)
+                {
+                    count = count + 1;
+                }
+                else
+                {
+                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'id': id, 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': characters[i]}); // name
+                    count = 1;
+                    id = d.id;
+                }
+            });
+
+            
+        }
         vis.scatterplotData = ret;
-
         
 
 
@@ -117,11 +123,13 @@ class ScatterPlot {
         console.log(vis.scatterplotData);
         
         // scales
+        var maxX = vis.scatterplotData.reduce((prev, current)=> ( (prev.id > current.id) ? prev : current),0)
+        var maxY = vis.scatterplotData.reduce((prev, current)=> ( (prev.numLines > current.numLines) ? prev : current),0)
         vis.xScale = d3.scaleLinear()
-            .domain([0, d3.max(vis.scatterplotData.id)])
+            .domain([0, maxX])
             .range([0, vis.width]);
         vis.yScale = d3.scaleLinear()
-            .domain(0, d3.max(vis.scatterplotData.count)) 
+            .domain([0, maxY]) 
             .range([0, vis.height]);
 
         // init axis
@@ -150,30 +158,21 @@ class ScatterPlot {
         let vis = this;
 
         // Add rectangles
-        vis.rect = vis.chart.selectAll('rect')
-            .data(vis.characterNums)
-            .enter()
-            .append('rect')
-                .attr('class', 'bar')
-                .attr('fill', "#59981A")
-                .attr('width', d => vis.xScale(vis.lineCounts[d]))
-                .attr('height', vis.yScale.bandwidth())
-                .attr('y', d => vis.yScale(vis.characterList[d])+75)
-                .attr('x', 1);
+        
 
-        vis.rect.on('mouseover', (event,d) => {
-            d3.select('#tooltip')
-                .style('display', 'block')
-                .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
-                .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
-                .html(`
-                <div class="tooltip-title">${vis.characterList[d]}</div>
-                <div><i>Had ${vis.lineCounts[d]} lines.</i></div>
-                `);
-        })
-        .on('mouseleave', () => {
-            d3.select('#tooltip').style('display', 'none');
-        });
+        // vis.rect.on('mouseover', (event,d) => {
+        //     d3.select('#tooltip')
+        //         .style('display', 'block')
+        //         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+        //         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+        //         .html(`
+        //         <div class="tooltip-title">${vis.characterList[d]}</div>
+        //         <div><i>Had ${vis.lineCounts[d]} lines.</i></div>
+        //         `);
+        // })
+        // .on('mouseleave', () => {
+        //     d3.select('#tooltip').style('display', 'none');
+        // });
 
         // Update axis
         vis.xAxisGroup.call(vis.xAxis);
