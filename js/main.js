@@ -7,6 +7,7 @@ d3.csv('data/himym-dialogues.csv')
     barChartLines = new BarChartLines({parentElement: '#barchartLines'}, data);
     treeMapAppearances = new TreeMapAppearances({parentElement: '#treemapAppearances'}, data);
     treeMapLines = new TreeMapLines({parentElement: '#treemapLines'}, data);
+    wordCloud = new WordCloud({parentElement: '#wordCloud'}, data);
 
     //gets all data for various init settings on page
     var initData = filterData(null,null,null,data);
