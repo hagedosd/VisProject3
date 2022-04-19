@@ -135,15 +135,10 @@ class ScatterPlot {
                     count = 1;
                     id = d.id;
                 }
-            });
-
-            
+            });      
         }
         vis.scatterplotData = ret;
         
-
-
-
         console.log(vis.scatterplotData);
         
         // scales
@@ -187,7 +182,7 @@ class ScatterPlot {
         let vis = this;
 
         // Add dots
-        vis.svg.append('g')
+        vis.circle = vis.svg.append('g')
         .selectAll("dot")
         .data(vis.scatterplotData)
         .enter()
@@ -199,34 +194,29 @@ class ScatterPlot {
         })
         .attr('cy', function (d) {return vis.yScale(d.numLines)})
         .attr('r', 3)
-        .attr("transform", "translate(" + 110 + "," + 40 + ")")
+        .attr("transform", "translate(" + 110 + "," + 27 + ")")
         .style("fill", function (d) {return fills[d.color]});
         
 
-        // vis.rect.on('mouseover', (event,d) => {
-        //     d3.select('#tooltip')
-        //         .style('display', 'block')
-        //         .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
-        //         .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
-        //         .html(`
-        //         <div class="tooltip-title">${vis.characterList[d]}</div>
-        //         <div><i>Had ${vis.lineCounts[d]} lines.</i></div>
-        //         `);
-        // })
-        // .on('mouseleave', () => {
-        //     d3.select('#tooltip').style('display', 'none');
-        // });
+        vis.circle.on('mouseover', (event, d) => {
+            d3.select('#tooltip')
+            .style('display', 'block')
+            .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+            .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+            .html(`
+            <div class="tooltip-title">${d.name}</div>
+            <div><i>Season: ${d.season}</i></div>
+            <div><i>Episode: ${d.episode}</i></div>
+            <div><i>Line Count: ${d.numLines}</i></div>
+            `);
+    })
+    .on('mouseleave', () => {
+        d3.select('#tooltip').style('display', 'none');
+    });
+
 
         // Update axis
         vis.xAxisGroup.call(vis.xAxis);
         vis.yAxisGroup.call(vis.yAxis);
-    }
-
-    updateByYear(yearFrom, yearTo){
-        let vis = this;
-        vis.svg.selectAll('*').remove();
-        vis.startYear = yearFrom;
-        vis.endYear = yearTo;
-        vis.updateVis();
     }
 }
