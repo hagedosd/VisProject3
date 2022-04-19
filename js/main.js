@@ -17,6 +17,12 @@ function updateTreeLines(value) {
     treeMapLines.updateTree(value);
 }
 
+// update html element
+function updateElement(id, value) {
+    console.log('Updating element! current value of ', id, document.getElementById(id).innerHTML)
+    document.getElementById(id).innerHTML = value;
+}
+
 function filterData(character, season, episode, data) {
     let characters = []
     let episodes = []

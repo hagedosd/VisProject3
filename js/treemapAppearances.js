@@ -175,6 +175,9 @@ class TreeMapAppearances {
         .on('mouseleave', () => {
             d3.select('#tooltip').style('display', 'none');
         });
+
+        // Update num char appearances
+        updateElement('treeAppearancesNumChars', vis.charAppearances.length)
     }
     // Helper Functions
 
