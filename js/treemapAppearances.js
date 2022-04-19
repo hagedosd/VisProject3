@@ -1,4 +1,4 @@
-class TreeMapLines {
+class TreeMapAppearances {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
@@ -16,10 +16,13 @@ class TreeMapLines {
     initVis(){
         let vis = this;
 
-        // Minimum line count to have character on tree map
-        vis.minLineCount = 50;
-        // Filter data
+        // min appearance count to have character on tree map
+        vis.minAppearanceCount = 5;
+        // filter data
         vis.filteredData = filterData(null,null,null,vis.data)[1];
+
+        //set up the width and height of the area where visualizations will go- factoring in margins               
+        vis.radius = vis.config.containerHeight / 2 - vis.config.margin.top;
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
@@ -45,34 +48,27 @@ class TreeMapLines {
         vis.chart.selectAll("text").remove();
 
         // process data
-        vis.processedData = [];
-        let otherCharLineCount = 0;
-
-        // Only show characters with more than vis.minLineCount in the pie chart
-        // The rest will be combined into an "other" group
-        vis.filteredData.forEach(d=> {
-            if (d.numLines > vis.minLineCount) {
-                vis.processedData.push(d);
-            }
-            else {
-                otherCharLineCount += 1;
-            }
-        });
-        vis.processedData.push({name: "Other", numLines: otherCharLineCount})
+        vis.charAppearances = [];
+            vis.filteredData.forEach(d => {
+                let numCharAppearances = d3.count(filterData(d.name,null,null,vis.data)[0], d => d.episode);
+                if (numCharAppearances > vis.minAppearanceCount) {
+                    vis.charAppearances.push({name: d.name, numAppearances: numCharAppearances});
+                }
+            });
 
         // scales
         // set the color scale
         vis.color = d3.scaleOrdinal()
-            .domain(vis.processedData)
+            .domain(vis.charAppearances)
             .range(d3.schemeSet2);
 
         // Set all data as top level children
         vis.treeData = {
-            children: vis.processedData
+            children: vis.charAppearances
         }
 
         // Calculate the root and build the treemap
-        vis.root = d3.hierarchy(vis.treeData).sum(d=>d.numLines) // Here the size of each leave is given in the 'value' field in input data
+        vis.root = d3.hierarchy(vis.treeData).sum(d=>d.numAppearances) // Here the size of each leave is given in the 'value' field in input data
         vis.treemap = d3.treemap()
             .size([vis.width, vis.height])
             .padding(2)
@@ -133,7 +129,7 @@ class TreeMapLines {
         // Add text in tree map if cells are bigger than mix/max height
         // If the cells aren't, set opacity of text to 0
         const minHeight = 80
-        const minWidth = 45;
+        const minWidth = 60;
         vis.rectText = vis.chart.selectAll("text")
             .data(vis.root.leaves())
             .enter()
@@ -150,7 +146,7 @@ class TreeMapLines {
                         };
                         return 1;
                     });
-        
+
         // Add tooltips on mouseover for rect AND text, because even if the text is
         // invisible it still takes up room
         vis.rect.on('mouseover', (event,d) => {
@@ -160,7 +156,7 @@ class TreeMapLines {
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .html(`
                 <div class="tooltip-title">${d.data.name}</div>
-                <div><i>Had ${d.data.numLines} lines.</i></div>
+                <div><i>Appeared in ${d.data.numAppearances} episodes.</i></div>
                 `);
         })
         .on('mouseleave', () => {
@@ -173,7 +169,7 @@ class TreeMapLines {
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .html(`
                 <div class="tooltip-title">${d.data.name}</div>
-                <div><i>Had ${d.data.numLines} lines.</i></div>
+                <div><i>Appeared in ${d.data.numAppearances} episodes.</i></div>
                 `);
         })
         .on('mouseleave', () => {
@@ -184,9 +180,8 @@ class TreeMapLines {
 
     //from tree min select
     updateTree(min) {
-        console.log('Updating line tree')
         let vis = this;
-        vis.minLineCount = min;
+        vis.minAppearanceCount = min;
         vis.updateVis();
     }
 }

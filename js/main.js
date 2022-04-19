@@ -9,6 +9,14 @@ d3.csv('data/himym-dialogues.csv')
     treeMapLines = new TreeMapLines({parentElement: '#treemapLines'}, data);
 }).catch(error => console.error(error));
 
+//on option change update tree map
+function updateTreeAppearances(value) {
+    treeMapAppearances.updateTree(value);
+}
+function updateTreeLines(value) {
+    treeMapLines.updateTree(value);
+}
+
 function filterData(character, season, episode, data) {
     let characters = []
     let episodes = []

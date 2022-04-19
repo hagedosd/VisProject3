@@ -36,12 +36,27 @@
             <!--Tree map for characters line counts-->
             <div id="treemapAppearancesDiv" class="column">
                 <h2>Appearances by Characters in Seasons 1-6</h2>
+                <label for="treeAppearanceSelect">Minimum Number of Appearances: </label>
+                <select id="treeAppearanceSelect" onChange="updateTreeAppearances(value)">
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                </select>
                 <svg id="treemapAppearances"></svg>
             </div>
 
             <!--Treemap for characters appearances-->
             <div id="treemapLinesDiv" class="column">
                 <h2>Lines by Characters in Seasons 1-6</h2>
+                <label for="treeLinesSelect">Minimum Number of Lines: </label>
+                <select id="treeLinesSelect" onChange="updateTreeLines(value)">
+                    <option value="1">1</option>
+                    <option value="5">5</option>
+                    <option value="20">20</option>
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
+                </select>
                 <svg id="treemapLines"></svg>
             </div>
         </div>
