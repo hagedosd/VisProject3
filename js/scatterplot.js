@@ -72,7 +72,7 @@ class ScatterPlot {
 
         var tmp = [[],[],[],[],[],[],[],[],[]];
         vis.data.forEach(d => {
-            if (d['character'] == 'Ted'){
+            if (d['character'] == 'Ted'){     //// change character here
                 //console.log(d);
                 tmp[d['season'] - 1].push(d);
             }
