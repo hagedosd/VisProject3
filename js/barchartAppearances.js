@@ -15,6 +15,8 @@ class BarChartAppearances {
 
     initVis() {
         let vis = this;
+        vis.season = null;
+        vis.episode = null;
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
@@ -29,6 +31,45 @@ class BarChartAppearances {
         const transformheight = - vis.config.margin.top 
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left}, ${transformheight})`);
+
+        vis.updateVis();
+    }
+
+    updateVis() {
+        let vis = this;
+        vis.episodeCounts = new Array;
+        vis.characterList = ["Barney", "Ted", "Lily", "Marshall", "Robin", "Producer"];
+
+        // This creates an array the length of vis.characterList with values starting from 0 and counting up
+        vis.characterNums = Array.from(Array(vis.characterList.length).keys());
+        vis.namesAndAppearances = [];
+
+        for (let i = 0; i < vis.characterList.length; i++){
+            vis.filterResult = filterData(vis.characterList[i], vis.season, vis.episode, vis.data);
+            vis.episodeCounts.push(vis.filterResult[0].length);
+            // console.log(vis.characterList[i], "data for season 1:", vis.filterResult);
+            // console.log(vis.characterList[i], "appeared in: ", vis.episodeCounts[i], "episodes.");
+        }
+        // vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
+        // console.log(vis.filterResult);
+        // vis.episodeCounts.push(vis.filterResult[0].length);
+        // vis.namesAndAppearances.push({key: vis.filterResult[1][0]["numLines"]})
+        
+        // scales
+        vis.xScale = d3.scaleLinear()
+            .domain([0, d3.max(vis.episodeCounts)])
+            .range([0, vis.width]);
+        vis.yScale = d3.scaleBand()
+            .paddingInner(0.15)
+            .domain(vis.characterList) 
+            .range([0, vis.height]);
+
+        // init axis
+        vis.xAxis = d3.axisBottom(vis.xScale)
+            // .tickFormat(d3.format("d")); // Remove thousand comma
+            .tickSizeOuter(0);
+        vis.yAxis = d3.axisLeft(vis.yScale)
+            .tickSizeOuter(0);
 
         vis.chart.append("text")
             .attr("y", vis.height + 130)
@@ -46,40 +87,6 @@ class BarChartAppearances {
             .attr("transform", "rotate(-90)")
             .attr('font-weight', 'bold')
             .text("Characters");
-
-        vis.updateVis();
-    }
-
-    updateVis() {
-        let vis = this;
-        vis.episodeCounts = new Array;
-        vis.characterList = ["Ted", "Lily", "Marshall", "Robin", "Producer"];
-
-        // This creates an array the length of vis.characterList with values starting from 0 and counting up
-        vis.characterNums = Array.from(Array(vis.characterList.length).keys());
-
-        for (let i = 0; i < vis.characterList.length; i++){
-            vis.filterResult = filterData(vis.characterList[i], "1", null, vis.data);
-            vis.episodeCounts.push(vis.filterResult[0].length);
-            // console.log(vis.characterList[i], "data for season 1:", vis.filterResult);
-            // console.log(vis.characterList[i], "appeared in: ", vis.episodeCounts[i], "episodes.");
-        }
-        
-        // scales
-        vis.xScale = d3.scaleLinear()
-            .domain([0, d3.max(vis.episodeCounts)])
-            .range([0, vis.width]);
-        vis.yScale = d3.scaleBand()
-            .paddingInner(0.15)
-            .domain(vis.characterList) 
-            .range([0, vis.height]);
-
-        // init axis
-        vis.xAxis = d3.axisBottom(vis.xScale)
-            // .tickFormat(d3.format("d")); // Remove thousand comma
-            .tickSizeOuter(0);
-        vis.yAxis = d3.axisLeft(vis.yScale)
-            .tickSizeOuter(0);
 
         // init axis groups
         vis.xAxisGroup = vis.chart.append("g")
@@ -130,11 +137,19 @@ class BarChartAppearances {
         vis.yAxisGroup.call(vis.yAxis);
     }
 
-    updateByYear(yearFrom, yearTo){
+    updateSeasonEpisode(season, episode){
         let vis = this;
-        vis.svg.selectAll('*').remove();
-        vis.startYear = yearFrom;
-        vis.endYear = yearTo;
+        vis.chart.selectAll('*').remove();
+
+        if (season != null)
+            vis.season = season.toString();
+        if (episode != null)
+            vis.episode = episode.toString();
+        if (season == -1)
+            vis.season = null;
+        if (episode == -1)
+            vis.episode = null;
+        
         vis.updateVis();
     }
 }
