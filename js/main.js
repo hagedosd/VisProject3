@@ -5,6 +5,7 @@ d3.csv('data/himym-dialogues.csv')
     // Create an instance of each chart
     barChartAppearances = new BarChartAppearances({parentElement: '#barchartAppearances'}, data);
     barChartLines = new BarChartLines({parentElement: '#barchartLines'}, data);
+    scatterplot = new ScatterPlot({parentElement: '#scatterplot'}, data);
     treeMapAppearances = new TreeMapAppearances({parentElement: '#treemapAppearances'}, data);
     treeMapLines = new TreeMapLines({parentElement: '#treemapLines'}, data);
     wordCloud = new WordCloud({parentElement: '#wordCloud'}, data);
@@ -95,16 +96,28 @@ function initSelects(initData) {
     const seasonSelectData=[{"display": "Seasons 1-6", "value" : -1},{"display": "Season 1", "value" : 1},{"display": "Season 2", "value" : 2},{"display": "Season 3", "value" : 3},{"display": "Season 4", "value" : 4},{"display": "Season 5", "value" : 5},{"display": "Season 6", "value" : 6}] //2ez
     const selectSeason = document.getElementById('selectSeason')
     seasonSelectData.forEach(d => selectSeason.add(new Option(d.display,d.value)));
-    const characterSelectData=[]
+    const characterSelectData=[];
     const selectCharacter = document.getElementById('selectCharacter');
     let characters = initData[1];
     characters.some(function(c){
-        characterSelectData.push({"display": c.name + " (" + c.numLines + " lines )", "value": c.name, "numLines": c.numLines});
+        characterSelectData.push({"display": c.name + " (" + c.numLines + ")", "value": c.name, "numLines": c.numLines});
     });
     characterSelectData.sort(function(a,b){
         return +b.numLines - +a.numLines;
     });
     characterSelectData.forEach(d => selectCharacter.add(new Option(d.display,d.value)));
+    $('select[character]').multiselect();
+    $('#selectCharacter').multiselect({
+        columns: 8,
+        placeholder: 'Select Characters (total lines)',
+        search: true,
+        selectAll: true
+    });
+    $('select[season]').multiselect();
+    $('#selectSeason').multiselect({
+        placeholder: 'Select Season',
+        selectAll: true
+    });
 }
 
 //handle season and episode selections
@@ -117,9 +130,9 @@ $(document).ready(function(){
                     const episodeSelectData = []
                     let episodes = data[0]
                     episodes.some(function (e){
-                        if(e.season == $('#selectSeason').val()){ //need to use double equal NOT triple equal (⌐■_■)
-                            if(!episodeSelectData.some( s => s.value == e.episode)){
-                                episodeSelectData.push({"display": "Episode " +  e.episode, "value": +e.episode});
+                        if($('#selectSeason').val().includes(e.season)){ //need to use double equal NOT triple equal (⌐■_■)
+                            if(!episodeSelectData.some( s => (s.value == e.episode) && (s.season == e.season))){
+                                episodeSelectData.push({"display": "Episode " +  e.episode, "value": +e.episode, "season": +e.season});
                             }
                         } 
                     });
