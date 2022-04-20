@@ -65,12 +65,13 @@ function filterData(character, season, episode, data) {
                 characters.some(function(c){
                     if (c.name === d.name){
                         c.numLines += d.numLines;
+                        c.numAppearances += 1;
                         return true;
                     }
                 });
             }
             else{
-                characters.push({"name" : d.name, "numLines" : d.numLines});
+                characters.push({"name" : d.name, "numLines" : d.numLines, "numAppearances": 1});
             }
         })
     });

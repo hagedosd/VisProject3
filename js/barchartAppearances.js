@@ -44,14 +44,19 @@ class BarChartAppearances {
         vis.characterNums = Array.from(Array(vis.characterList.length).keys());
         vis.namesAndAppearances = [];
 
-        for (let i = 0; i < vis.characterList.length; i++){
-            vis.filterResult = filterData(vis.characterList[i], vis.season, vis.episode, vis.data);
-            vis.episodeCounts.push(vis.filterResult[0].length);
-            // console.log(vis.characterList[i], "data for season 1:", vis.filterResult);
-            // console.log(vis.characterList[i], "appeared in: ", vis.episodeCounts[i], "episodes.");
-        }
-        // vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
-        // console.log(vis.filterResult);
+        // for (let i = 0; i < vis.characterList.length; i++){
+        //     vis.filterResult = filterData(vis.characterList[i], vis.season, vis.episode, vis.data);
+        //     vis.episodeCounts.push(vis.filterResult[0].length);
+        //     // console.log(vis.characterList[i], "data for season 1:", vis.filterResult);
+        //     // console.log(vis.characterList[i], "appeared in: ", vis.episodeCounts[i], "episodes.");
+        // }
+        vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
+        vis.characters = vis.filterResult[1]
+        vis.characters.sort(function(a,b){
+            return +b.numAppearances - +a.numAppearances;
+        });
+        vis.characters = vis.characters.slice(0,6);
+        console.log(vis.characters);
         // vis.episodeCounts.push(vis.filterResult[0].length);
         // vis.namesAndAppearances.push({key: vis.filterResult[1][0]["numLines"]})
         
