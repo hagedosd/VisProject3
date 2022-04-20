@@ -15,6 +15,11 @@ class BarChartLines {
 
     initVis() {
         let vis = this;
+        vis.season = null;
+        vis.episode = null;
+
+        // This creates an array of length 10 with values equal to their index
+        vis.characterNums = Array.from({length: 10}, (x, i) => i);
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
@@ -30,40 +35,30 @@ class BarChartLines {
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left}, ${transformheight})`);
 
-        vis.chart.append("text")
-            .attr("y", vis.height + 130)
-            .attr("x", vis.width/2 - 80)
-            .attr("text-anchor", "right")
-            .attr('font-size', '14px')
-            .attr('font-weight', 'bold')
-            .text("Lines");
-
-        vis.chart.append("text")
-            .attr("y", -50)
-            .attr("x", -vis.height / 2 - 50)
-            .attr("text-anchor", "end")
-            .attr('font-size', '14px')
-            .attr("transform", "rotate(-90)")
-            .attr('font-weight', 'bold')
-            .text("Characters");
-
-
         vis.updateVis();
     }
 
     updateVis() {
         let vis = this;
         vis.lineCounts = new Array;
-        vis.characterList = ["Ted", "Lily", "Marshall", "Robin", "Producer"];
+        vis.nameList = []
 
-        // This creates an array the length of vis.characterList with values starting from 0 and counting up
-        vis.characterNums = Array.from(Array(vis.characterList.length).keys());
+        vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
+        // Only keep character data from data query
+        vis.characters = vis.filterResult[1]
 
-        for (let i = 0; i < vis.characterList.length; i++){
-            vis.filterResult = filterData(vis.characterList[i], "1", null, vis.data);
-            vis.lineCounts.push(vis.filterResult[1][0]["numLines"]);
-            // console.log(vis.characterList[i], "data for season 1:", vis.filterResult);
-            // console.log(vis.characterList[i], "had: ", vis.lineCounts[i], "lines.");
+        // Sort all characters by line count
+        vis.characters.sort(function(a,b){
+            return +b.numLines - +a.numLines;
+        });
+        vis.characters = vis.characters.slice(0,10);
+        console.log("Top 10 character by line count:", vis.characters);
+        
+        // manually inserting into a list to be read later
+        for (let i = 0; i < 10; i++){
+            // console.log("List of appearances:", vis.characters[i]["numAppearances"]);
+            vis.lineCounts[i] = vis.characters[i]["numLines"];
+            vis.nameList[i] = vis.characters[i]["name"];
         }
         
         // scales
@@ -72,7 +67,7 @@ class BarChartLines {
             .range([0, vis.width]);
         vis.yScale = d3.scaleBand()
             .paddingInner(0.15)
-            .domain(vis.characterList) 
+            .domain(vis.nameList) 
             .range([0, vis.height]);
 
         // init axis
@@ -81,6 +76,23 @@ class BarChartLines {
             .tickSizeOuter(0);
         vis.yAxis = d3.axisLeft(vis.yScale)
             .tickSizeOuter(0);
+
+        vis.chart.append("text")
+            .attr("y", vis.height + 130)
+            .attr("x", vis.width/2 - 80)
+            .attr("text-anchor", "right")
+            .attr('font-size', '14px')
+            .attr('font-weight', 'bold')
+            .text("Lines");
+
+        // vis.chart.append("text")
+        //     .attr("y", -50)
+        //     .attr("x", -vis.height / 2 - 50)
+        //     .attr("text-anchor", "end")
+        //     .attr('font-size', '14px')
+        //     .attr("transform", "rotate(-90)")
+        //     .attr('font-weight', 'bold')
+        //     .text("Characters");
 
         // init axis groups
         vis.xAxisGroup = vis.chart.append("g")
@@ -109,7 +121,7 @@ class BarChartLines {
                 .attr('fill', "#59981A")
                 .attr('width', d => vis.xScale(vis.lineCounts[d]))
                 .attr('height', vis.yScale.bandwidth())
-                .attr('y', d => vis.yScale(vis.characterList[d])+75)
+                .attr('y', d => vis.yScale(vis.nameList[d])+75)
                 .attr('x', 1);
 
         vis.rect.on('mouseover', (event,d) => {
@@ -118,7 +130,7 @@ class BarChartLines {
                 .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .html(`
-                <div class="tooltip-title">${vis.characterList[d]}</div>
+                <div class="tooltip-title">${vis.nameList[d]}</div>
                 <div><i>Had ${vis.lineCounts[d]} lines.</i></div>
                 `);
         })
@@ -131,11 +143,19 @@ class BarChartLines {
         vis.yAxisGroup.call(vis.yAxis);
     }
 
-    updateByYear(yearFrom, yearTo){
+    updateSeasonEpisode(season, episode){
         let vis = this;
-        vis.svg.selectAll('*').remove();
-        vis.startYear = yearFrom;
-        vis.endYear = yearTo;
+        vis.chart.selectAll('*').remove();
+
+        if (season != null)
+            vis.season = season.toString();
+        if (episode != null)
+            vis.episode = episode.toString();
+        if (season == -1)
+            vis.season = null;
+        if (episode == -1)
+            vis.episode = null;
+        
         vis.updateVis();
     }
 }

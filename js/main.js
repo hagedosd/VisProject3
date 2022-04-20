@@ -81,11 +81,12 @@ function filterData(character, season, episode, data) {
 function updateChartsBySeasonEpisode(season,episode){
     //notes: -1 for season means all seasons/episodes (null episode)
     // -1 for episode means all episodes for season
-    console.log("Season:", season);
-    console.log("Episode:", episode);
+    // console.log("Season:", season);
+    // console.log("Episode:", episode);
 
     //chart.functionToUpdateBySeasonEpisode(season,episode)
     barChartAppearances.updateSeasonEpisode(season, episode);
+    barChartLines.updateSeasonEpisode(season, episode);
 }
 function updateChartsByCharacter(character){
     console.log(character);
