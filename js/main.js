@@ -8,6 +8,7 @@ d3.csv('data/himym-dialogues.csv')
     scatterplot = new ScatterPlot({parentElement: '#scatterplot'}, data);
     treeMapAppearances = new TreeMapAppearances({parentElement: '#treemapAppearances'}, data);
     treeMapLines = new TreeMapLines({parentElement: '#treemapLines'}, data);
+    wordCloud = new WordCloud({parentElement: '#wordCloud'}, data);
 
     //gets all data for various init settings on page
     var initData = filterData(null,null,null,data);
@@ -25,7 +26,6 @@ function updateTreeLines(value) {
 
 // update html element
 function updateElement(id, value) {
-    console.log('Updating element! current value of ', id, document.getElementById(id).innerHTML)
     document.getElementById(id).innerHTML = value;
 }
 
@@ -43,19 +43,20 @@ function filterData(character, season, episode, data) {
                             e.characters.some(function(c){
                                 if (c.name === d.character){
                                     c.numLines += 1;
+                                    c.allLines += " " + d.dialogue;
                                     return true;
                                 }
                             });
                         }
                         else{
-                            e.characters.push({"name" : d.character, "numLines" : 1});
+                            e.characters.push({"name" : d.character, "numLines" : 1, "allLines": d.dialogue});
                         }
                         return true;
                     }
                 });
             }
             else{
-                episodes.push({"season" : d.season, "episode" : d.episode, "numScenes" : d.scene, "characters" : [{"name" : d.character, "numLines" : 1}]});
+                episodes.push({"season" : d.season, "episode" : d.episode, "numScenes" : d.scene, "characters" : [{"name" : d.character, "numLines" : 1, "allLines": d.dialogue}]});
             }
         }
     });
@@ -65,12 +66,13 @@ function filterData(character, season, episode, data) {
                 characters.some(function(c){
                     if (c.name === d.name){
                         c.numLines += d.numLines;
+                        c.allLines += d.allLines;
                         return true;
                     }
                 });
             }
             else{
-                characters.push({"name" : d.name, "numLines" : d.numLines});
+                characters.push({"name" : d.name, "numLines" : d.numLines, "allLines": d.allLines});
             }
         })
     });

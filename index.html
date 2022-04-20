@@ -65,6 +65,12 @@
                 <span style="margin-left: 5px;">Number of characters shown: <strong id="treeLinesNumChars">0</strong></span>
                 <svg id="treemapLines"></svg>
             </div>
+
+            <!--Word cloud-->
+            <div id="wordCloudDiv" class="column">
+                <h2>Word Cloud</h2>
+                <svg id="wordCloud"></svg>
+            </div>
         </div>
         <h3 style="width:80%;margin:auto">Character: <select name="selectCharacter[]" multiple = "character" multiple id="selectCharacter"></select></h3>
 
@@ -79,6 +85,8 @@
     <script src="js/d3.v6.min.js"></script>
     <!-- JQUERY :)-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- D3 Cloud-->
+    <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
     <!-- MultiSelect bundle -->
     <script src="js/jquery.multiselect.js"></script>
     
@@ -90,6 +98,7 @@
     <script src="js/scatterplot.js"></script>
     <script src="js/treemapAppearances.js"></script>
     <script src="js/treemapLines.js"></script>
+    <script src="js/wordcloud.js"></script>
 
     <!-- Color scale -->
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
