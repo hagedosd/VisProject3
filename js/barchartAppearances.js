@@ -40,18 +40,37 @@ class BarChartAppearances {
 
     updateVis() {
         let vis = this;
-        vis.appList = []
-        vis.nameList = []
+        vis.appList = [];
+        vis.nameList = [];
 
-        if (vis.season == null)
+        // Case for all seasons selected
+        if (vis.season == null){
+            console.log("All seasons selected.");
             vis.filterResult = filterData(null, null, vis.episode, vis.data);
+        }
+        // Case for any single season selected
+        else if(vis.season.length == 1){
+            console.log("Single season selected:", vis.season[0]);
+            vis.filterResult = filterData(null, vis.season[0], vis.episode, vis.data);
+        }
+        // Case for multiple seasons selected but not all
         else{
+            console.log("Multiple seasons selected.")
             for (let i = 0; i < vis.season.length; i++){
-                vis.filterResult += filterData(null, vis.season, vis.episode, vis.data);
+                // vis.filterResultTemp = filterData(null, vis.season[i], vis.episode, vis.data);
+                // console.log("Character data for season", i, ":", vis.filterResultTemp);
+                if (i > 0)
+                    vis.filterResult = filterData(null, vis.season[i], vis.episode, vis.data);
+                else {
+                    vis.newFilterResult = filterData(null, vis.season[i], vis.episode, vis.data);
+                    vis.filterResult = merge(vis.filterResult, vis.newFilterResult);
+                    console.log("All data for seasons up to", i, ":", vis.filterResult);
+                }
             }
         }
         // Only keep character data from data query
-        vis.characters = vis.filterResult[1]
+        vis.characters = vis.filterResult[1];
+        console.log("All character info from selected seasons:", vis.characters);
         // console.log("This is returned by the filter:", vis.filterResult);
         // console.log("This is character data:", vis.characters);
 
