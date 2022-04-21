@@ -46,15 +46,15 @@ class BarChartAppearances {
         vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
         // Only keep character data from data query
         vis.characters = vis.filterResult[1]
-        console.log("This is returned by the filter:", vis.filterResult);
-        console.log("This is character data:", vis.characters);
+        // console.log("This is returned by the filter:", vis.filterResult);
+        // console.log("This is character data:", vis.characters);
 
         // Sort all characters by appearance count
         vis.characters.sort(function(a,b){
             return +b.numAppearances - +a.numAppearances;
         });
         vis.characters = vis.characters.slice(0,10);
-        console.log("This is top 10 character data:", vis.characters);
+        // console.log("This is top 10 character data:", vis.characters);
 
         // manually inserting into a list to be read later
         for (let i = 0; i < 10; i++){
@@ -147,6 +147,7 @@ class BarChartAppearances {
         let vis = this;
         vis.chart.selectAll('*').remove();
 
+        vis.season = season;
         // if (season != null)
         //     vis.season = season.toString();
         if (episode != null)
