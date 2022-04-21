@@ -43,7 +43,13 @@ class BarChartAppearances {
         vis.appList = []
         vis.nameList = []
 
-        vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
+        if (vis.season == null)
+            vis.filterResult = filterData(null, null, vis.episode, vis.data);
+        else{
+            for (let i = 0; i < vis.season.length; i++){
+                vis.filterResult += filterData(null, vis.season, vis.episode, vis.data);
+            }
+        }
         // Only keep character data from data query
         vis.characters = vis.filterResult[1]
         // console.log("This is returned by the filter:", vis.filterResult);
@@ -145,14 +151,18 @@ class BarChartAppearances {
 
     updateSeasonEpisode(season, episode){
         let vis = this;
+        let equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
         vis.chart.selectAll('*').remove();
+        // console.log("Seasons:", vis.season);
+        // console.log("Episode:". vis.episode);
 
         vis.season = season;
+        vis.episode = episode;
         // if (season != null)
         //     vis.season = season.toString();
-        if (episode != null)
-            vis.episode = episode.toString();
-        if (season == -1)
+        // if (episode != null)
+        //     vis.episode = episode
+        if (equals(season, ['1', '2', '3', '4', '5', '6']))
             vis.season = null;
         if (episode == -1)
             vis.episode = null;
@@ -160,8 +170,8 @@ class BarChartAppearances {
         console.log("Requested seasons:", season);
         console.log("Requested episode:", episode);
         console.log("****************************");
-        console.log("Processed seasons:", vis.season);
-        console.log("Processed episode:". vis.episode);
+        console.log("Processed seasons length:", vis.season);
+        console.log("Processed episode:", vis.episode);
 
         
         vis.updateVis();
