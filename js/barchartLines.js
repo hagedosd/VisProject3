@@ -52,11 +52,9 @@ class BarChartLines {
             return +b.numLines - +a.numLines;
         });
         vis.characters = vis.characters.slice(0,10);
-        console.log("Top 10 character by line count:", vis.characters);
         
         // manually inserting into a list to be read later
         for (let i = 0; i < 10; i++){
-            // console.log("List of appearances:", vis.characters[i]["numAppearances"]);
             vis.lineCounts[i] = vis.characters[i]["numLines"];
             vis.nameList[i] = vis.characters[i]["name"];
         }

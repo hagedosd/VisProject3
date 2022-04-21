@@ -128,7 +128,7 @@ class TreeMapAppearances {
 
         // Add text in tree map if cells are bigger than mix/max height
         // If the cells aren't, set opacity of text to 0
-        const minHeight = 80
+        const minHeight = 60;
         const minWidth = 60;
         vis.rectText = vis.chart.selectAll("text")
             .data(vis.root.leaves())
@@ -136,16 +136,21 @@ class TreeMapAppearances {
             .append("text")
                 .attr("x", d => d.x0+5)    // +5 to adjust position (more right)
                 .attr("y", d => d.y0+20)    // +20 to adjust position (lower)
-                .text(d => d.data.name)
+                .text(d => {
+                    if ( d.x1 - d.x0 <= minWidth || d.y1 - d.y0 <= minHeight ) {
+                        return ''
+                    };
+                    return d.data.name;
+                })
                 .call(wrap, minWidth)
                 .attr("font-size", "15px")
-                .attr("fill", "black")
-                .attr('opacity', d => {
-                        if ( d.x1 - d.x0 <= minWidth || d.y1 - d.y0 <= minHeight ) {
-                            return 0
-                        };
-                        return 1;
-                    });
+                .attr("fill", "black");
+                // .attr('opacity', d => {
+                //         if ( d.x1 - d.x0 <= minWidth || d.y1 - d.y0 <= minHeight ) {
+                //             return 0
+                //         };
+                //         return 1;
+                //     });
 
         // Add tooltips on mouseover for rect AND text, because even if the text is
         // invisible it still takes up room

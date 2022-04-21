@@ -46,22 +46,21 @@ class BarChartAppearances {
         vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
         // Only keep character data from data query
         vis.characters = vis.filterResult[1]
+        console.log("This is returned by the filter:", vis.filterResult);
+        console.log("This is character data:", vis.characters);
 
         // Sort all characters by appearance count
         vis.characters.sort(function(a,b){
             return +b.numAppearances - +a.numAppearances;
         });
         vis.characters = vis.characters.slice(0,10);
-        // console.log("Top 10 character by appearances:", vis.characters);
-        
+        console.log("This is top 10 character data:", vis.characters);
+
         // manually inserting into a list to be read later
         for (let i = 0; i < 10; i++){
-            // console.log("List of appearances:", vis.characters[i]["numAppearances"]);
             vis.appList[i] = vis.characters[i]["numAppearances"];
             vis.nameList[i] = vis.characters[i]["name"];
         }
-        // console.log("Top 10 characters by name:", vis.nameList)
-        // console.log("Appearance counts:", vis.appList)
         
         // scales
         vis.xScale = d3.scaleLinear()
@@ -148,14 +147,21 @@ class BarChartAppearances {
         let vis = this;
         vis.chart.selectAll('*').remove();
 
-        if (season != null)
-            vis.season = season.toString();
+        // if (season != null)
+        //     vis.season = season.toString();
         if (episode != null)
             vis.episode = episode.toString();
         if (season == -1)
             vis.season = null;
         if (episode == -1)
             vis.episode = null;
+
+        console.log("Requested seasons:", season);
+        console.log("Requested episode:", episode);
+        console.log("****************************");
+        console.log("Processed seasons:", vis.season);
+        console.log("Processed episode:". vis.episode);
+
         
         vis.updateVis();
     }
