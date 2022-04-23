@@ -93,7 +93,7 @@ function updateChartsByCharacter(character){
 
 //formats select data and then populates selects
 function initSelects(initData) {
-    const seasonSelectData=[{"display": "Seasons 1-6", "value" : -1},{"display": "Season 1", "value" : 1},{"display": "Season 2", "value" : 2},{"display": "Season 3", "value" : 3},{"display": "Season 4", "value" : 4},{"display": "Season 5", "value" : 5},{"display": "Season 6", "value" : 6}] //2ez
+    const seasonSelectData=[{"display": "Season 1", "value" : 1},{"display": "Season 2", "value" : 2},{"display": "Season 3", "value" : 3},{"display": "Season 4", "value" : 4},{"display": "Season 5", "value" : 5},{"display": "Season 6", "value" : 6}] //2ez
     const selectSeason = document.getElementById('selectSeason')
     seasonSelectData.forEach(d => selectSeason.add(new Option(d.display,d.value)));
     const characterSelectData=[];
@@ -123,7 +123,7 @@ function initSelects(initData) {
 //handle season and episode selections
 $(document).ready(function(){
     $('#selectSeason').on('change', function() {
-        if($('#selectSeason').val() != -1){
+        if($('#selectSeason').val() > 0 && $('#selectSeason').val().length < 2){
             d3.csv('data/himym-dialogues.csv')
                 .then(data => {
                     var data = filterData(null,null,null,data);
@@ -139,7 +139,6 @@ $(document).ready(function(){
                     episodeSelectData.sort(function(a,b){
                         return +a.value - +b.value;
                     });
-                    episodeSelectData.unshift({"display": "Episodes " +  episodeSelectData[0].value + " - " + episodeSelectData[episodeSelectData.length - 1].value , "value": -1})
                     const selectEpisode = document.getElementById('selectEpisode');
                     selectEpisode.options.length = 0;
                     episodeSelectData.forEach(d => selectEpisode.add(new Option(d.display,d.value)));
