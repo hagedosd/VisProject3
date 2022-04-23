@@ -90,9 +90,8 @@ function updateChartsByCharacter(character){
     console.log(character);
     //chart.functionToUpdateByCharacter(character)
 }
-function updateChartsByCharacterCloud(character){
-    console.log(character);
-    //chart.functionToUpdateByCharacter(character)
+function updateCloudCharacterSeason(character, season){
+    wordCloud.updateCharacterSeason(character, season);
 }
 
 //formats select data and then populates selects
@@ -111,7 +110,7 @@ function initSelects(initData) {
         return +b.numLines - +a.numLines;
     });
     characterSelectData.forEach(d => selectCharacter.add(new Option(d.display,d.value)));
-    characterSelectData.forEach(d => selectCharacterCloud.add(new Option(d.display,d.value)));
+    characterSelectData.forEach(d => selectCharacterCloud.add(new Option(d.display.split("(")[0],d.value)));
     $('select[character]').multiselect();
     $('#selectCharacter').multiselect({
         columns: 8,
@@ -167,8 +166,11 @@ $(document).ready(function(){
         updateChartsByCharacter($('#selectCharacter').val())
     }); 
     $('#selectCharacterCloud').on('change', function() {
-        updateChartsByCharacterCloud($('#selectCharacterCloud').val())
-    }); 
+        updateCloudCharacterSeason($('#selectCharacterCloud').val(), $('#selectSeasonCloud').val());
+    });
+    $('#selectSeasonCloud').on('change', function() {
+        updateCloudCharacterSeason($('#selectCharacterCloud').val(), $('#selectSeasonCloud').val());
+    });
 });
 
 // let result = filterData(null, null, null, data);

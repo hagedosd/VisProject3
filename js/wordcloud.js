@@ -16,8 +16,9 @@ class WordCloud {
     initVis(){
         let vis = this;
 
-        // Filter data
-        vis.filteredData = filterData("Ted","1",null,vis.data)[1];
+        // Default show Ted for all seasons
+        vis.character = "Ted";
+        vis.season = null;
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
@@ -40,6 +41,12 @@ class WordCloud {
 
     updateVis() {
         let vis = this;
+
+        // Remove old words
+        vis.chart.selectAll("text").remove();
+
+        // Filter data
+        vis.filteredData = filterData(vis.character,vis.season,null,vis.data)[1];
 
         // process data
         // remove stop words
@@ -82,6 +89,7 @@ class WordCloud {
                 vis.uniqueWords.push(d);
             }
         });
+
         // Set min/max word counts
         vis.wordCounts.forEach(d => {
             if (d.size < vis.minWordCount) {
@@ -127,7 +135,7 @@ class WordCloud {
                 .data(words)
                 .enter().append("text")
                 .style("font-size", function(d) { return d.size; })
-                .style("fill", "#69b3a2")
+                .style("fill", "#bf65bf")
                 .attr("text-anchor", "middle")
                 .attr("font-family", "Impact")
                 .attr("transform", function(d) {
@@ -136,5 +144,15 @@ class WordCloud {
                 .text(function(d) { return d.text; });
         }
 
+    }
+
+    updateCharacterSeason(character, season) {
+        let vis = this;
+        vis.character = character;
+        vis.season = season;
+        if (vis.season == "all") {
+            vis.season = null;
+        }
+        vis.updateVis();
     }
 }
