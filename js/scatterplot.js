@@ -148,6 +148,13 @@ class ScatterPlot {
                     count = 1;
                     id = d.id;
                 }
+                //bugfix :(
+                if(d.id == tmp_lst[tmp_lst.length - 1]['id'] && tmp_lst[tmp_lst.length - 1]['dialogue'] == d.dialogue){
+                    fixId(id);
+                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': characters[index]}); // name
+                    count = 1;
+                    id = d.id;
+                }
             });      
         }
         vis.scatterplotData = ret;
