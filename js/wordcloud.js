@@ -16,8 +16,9 @@ class WordCloud {
     initVis(){
         let vis = this;
 
-        // Filter data
-        vis.filteredData = filterData("Ted","1","1",vis.data)[1];
+        // Default show Ted for all seasons
+        vis.character = "Ted";
+        vis.season = null;
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
@@ -29,14 +30,26 @@ class WordCloud {
             .attr('height', vis.config.containerHeight);
 
         // // Append group element that will contain our actual chart (see margin convention)
-        vis.chart = vis.svg.append('g')
-            .attr('transform', `translate(${vis.config.margin.bottom}, ${vis.config.margin.top})`)
+        vis.chart = vis.svg.append('g');
+
+        // Scale text sizes between 10 and 100
+        vis.textSizeScale = d3.scaleLinear()
+            .range([10, 100]);
 
         vis.updateVis();
     }
 
     updateVis() {
         let vis = this;
+
+        // Remove old words
+        vis.chart.selectAll("text").remove();
+
+        // Init number of words in cloud to 0
+        vis.numWords = 0;
+
+        // Filter data
+        vis.filteredData = filterData(vis.character,vis.season,null,vis.data)[1];
 
         // process data
         // remove stop words
@@ -50,7 +63,6 @@ class WordCloud {
         vis.filteredData.forEach(d => {
             vis.words += d.allLines + " ";
         });
-        // console.log("all words: ", vis.words)
         vis.words = vis.words
             .trim()
             .split(/[\s.]+/g)
@@ -61,18 +73,57 @@ class WordCloud {
             .map((w) => w.toLowerCase())
             .filter((w) => w && !stopwords.has(w));
 
+        // Count words
+        vis.wordCounts = [];
+        vis.uniqueWords = [];
+        vis.minWordCount = Infinity;
+        vis.maxWordCount = 0;
+        vis.words.forEach(d => {
+            if (vis.uniqueWords.includes(d)) {
+                vis.wordCounts.forEach(j => {
+                    if (j.word == d) {
+                        j.size += 1;
+                    }
+                });
+            }
+            else {
+                vis.wordCounts.push({word: d, size: 1});
+                vis.uniqueWords.push(d);
+            }
+        });
+
+        // Set min/max word counts
+        vis.wordCounts.forEach(d => {
+            if (d.size < vis.minWordCount) {
+                vis.minWordCount = d.size;
+            }
+            if (d.size > vis.maxWordCount) {
+                vis.maxWordCount = d.size;
+            }
+        })
+
+        // Set scale domain
+        vis.textSizeScale.domain([vis.minWordCount, vis.maxWordCount])
+
         vis.renderVis();
     }
 
     renderVis(){
         let vis = this;
 
+        // Apply the scale
+        vis.wordCounts.forEach(d => {
+            d.size = vis.textSizeScale(d.size);
+        });
+
         // Constructs a new cloud layout instance. It run an algorithm to find the position of words that suits your requirements
         vis.layout = d3.layout.cloud()
             .size([vis.config.containerWidth, vis.config.containerHeight])
-            .words(vis.words.map(function(d) { return {text: d}; }))
-            .padding(10)
-            .fontSize(60)
+            .words(vis.wordCounts.map(function(d) { return {text: d.word, size: d.size}; }))
+            .padding(1)
+            .rotate(function() { return ~~(Math.random() * 2) * 90; })
+            .fontSize(function(d) { return d.size; })
+            .font("Impact")
             .on("end", draw);
         vis.layout.start();
 
@@ -85,37 +136,50 @@ class WordCloud {
                 .selectAll("text")
                 .data(words)
                 .enter().append("text")
-                .style("font-size", function(d) { return d.size + "px"; })
+                .style("font-size", function(d) { return d.size; })
+                .style("fill", "#bf65bf")
                 .attr("text-anchor", "middle")
+                .attr("font-family", "Impact")
                 .attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
-                .text(function(d) { return d.text; });
+                .text(function(d) { vis.numWords += 1; return d.text; });
         }
 
-        // var fontFamily = "sans-serif";
-        // var fontScale = 15;
-        // var padding = 0;
-        // var height = 500;
-        // var width = 700;
-        // const rotate = () => 0;
+        vis.cloudWords = vis.chart.selectAll("text");
 
-        // vis.w_cloud = cloud()
-        // .size([width, height])
-        // .words(vis.cloudData.map((d) => Object.create(d)))
-        // .padding(padding)
-        // .rotate(rotate)
-        // .font(fontFamily)
-        // .fontSize((d) => Math.sqrt(d.value) * fontScale)
-        // .on("word", ({ size, x, y, rotate, text }) => {
-        //   svg
-        //     .append("text")
-        //     .attr("font-size", size)
-        //     .attr("transform", `translate(${x},${y}) rotate(${rotate})`)
-        //     .text(text);
-        // });
-    
-        // w_cloud.start();
+        vis.cloudWords.on('mouseover', (event,d) => {
+            d3.select('#tooltip')
+                .style('display', 'block')
+                .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+                .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                .html(`
+                <div class="tooltip-title">${d.text}</div>
+                <div><i>was spoken ${vis.textSizeScale.invert(d.size)} times.</i></div>
+                `);
+        })
+        .on('mouseleave', () => {
+            d3.select('#tooltip').style('display', 'none');
+        });
 
+        // Update num char appearances
+        updateElement('cloudNumWords', vis.numWords);
+        if (vis.numWords == 0) {
+            document.getElementById('cloudNumWords').style.color = "red";
+        }
+        else {
+            document.getElementById('cloudNumWords').style.color = "black";
+        }
+
+    }
+
+    updateCharacterSeason(character, season) {
+        let vis = this;
+        vis.character = character;
+        vis.season = season;
+        if (vis.season == "all") {
+            vis.season = null;
+        }
+        vis.updateVis();
     }
 }
