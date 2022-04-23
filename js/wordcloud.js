@@ -63,7 +63,6 @@ class WordCloud {
         vis.filteredData.forEach(d => {
             vis.words += d.allLines + " ";
         });
-
         vis.words = vis.words
             .trim()
             .split(/[\s.]+/g)

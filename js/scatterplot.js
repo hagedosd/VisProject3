@@ -89,17 +89,20 @@ class ScatterPlot {
        vis.updateVis();
     }
 
-    updateVis() {
+    updateVis(characters) {
+        if (characters == undefined){
+            characters=["Ted"];
+        }
         
         let vis = this;
 
         var tmp = [[],[],[],[],[],[],[],[],[]];
         var ret = [];
-        var characters = ["Ted",'Marshall'];
+        //var characters = ["Ted",'Marshall'];
     
         for(var index = 0; index < characters.length; index++)
         {
-            console.log(index);
+            // console.log(index);
             vis.data.forEach(d => {
                 
                 if (d['character'] == characters[index]){     //// change character here
@@ -139,7 +142,7 @@ class ScatterPlot {
         }
         vis.scatterplotData = ret;
         
-        console.log(vis.scatterplotData);
+        // console.log(vis.scatterplotData);
         
         // scales
         var maxX = vis.scatterplotData.reduce((prev, current)=> ( (prev.id > current.id) ? prev : current),0);
