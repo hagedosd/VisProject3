@@ -34,7 +34,7 @@ function filterData(character, season, episode, data) {
     let characters = []
     let episodes = []
     data.forEach(d => {
-        if ((d.character === character || character === null) && (d.season === season || season === null) && (d.episode === episode || episode === null)){
+        if ((d.character === character || character === null) && (d.season === season || season === null || season.includes(d.season)) && (d.episode === episode || episode === null)){
             if (episodes.some(e => e.season === d.season && e.episode == d.episode)){
                 episodes.some(function(e){
                     if (e.season === d.season && e.episode == d.episode){
@@ -65,6 +65,7 @@ function filterData(character, season, episode, data) {
             if (characters.some(c => c.name === d.name)){
                 characters.some(function(c){
                     if (c.name === d.name){
+                        c.numAppearances += 1;
                         c.numLines += d.numLines;
                         c.allLines += d.allLines;
                         return true;
@@ -72,7 +73,7 @@ function filterData(character, season, episode, data) {
                 });
             }
             else{
-                characters.push({"name" : d.name, "numLines" : d.numLines, "allLines": d.allLines});
+                characters.push({"name" : d.name, "numAppearances": 1, "numLines" : d.numLines, "allLines": d.allLines});
             }
         })
     });
@@ -82,22 +83,30 @@ function filterData(character, season, episode, data) {
 function updateChartsBySeasonEpisode(season,episode){
     //notes: -1 for season means all seasons/episodes (null episode)
     // -1 for episode means all episodes for season
-    console.log(season);
-    console.log(episode);
+    // console.log("Season:", season);
+    // console.log("Episode:", episode);
+
     //chart.functionToUpdateBySeasonEpisode(season,episode)
+    barChartAppearances.updateSeasonEpisode(season, episode);
+    barChartLines.updateSeasonEpisode(season, episode);
 }
 function updateChartsByCharacter(character){
+    console.log(character);
+    //chart.functionToUpdateByCharacter(character)
+}
+function updateChartsByCharacterCloud(character){
     console.log(character);
     //chart.functionToUpdateByCharacter(character)
 }
 
 //formats select data and then populates selects
 function initSelects(initData) {
-    const seasonSelectData=[{"display": "Seasons 1-6", "value" : -1},{"display": "Season 1", "value" : 1},{"display": "Season 2", "value" : 2},{"display": "Season 3", "value" : 3},{"display": "Season 4", "value" : 4},{"display": "Season 5", "value" : 5},{"display": "Season 6", "value" : 6}] //2ez
+    const seasonSelectData=[{"display": "Season 1", "value" : 1},{"display": "Season 2", "value" : 2},{"display": "Season 3", "value" : 3},{"display": "Season 4", "value" : 4},{"display": "Season 5", "value" : 5},{"display": "Season 6", "value" : 6}] //2ez
     const selectSeason = document.getElementById('selectSeason')
     seasonSelectData.forEach(d => selectSeason.add(new Option(d.display,d.value)));
     const characterSelectData=[];
     const selectCharacter = document.getElementById('selectCharacter');
+    const selectCharacterCloud = document.getElementById('selectCharacterCloud');
     let characters = initData[1];
     characters.some(function(c){
         characterSelectData.push({"display": c.name + " (" + c.numLines + ")", "value": c.name, "numLines": c.numLines});
@@ -106,6 +115,7 @@ function initSelects(initData) {
         return +b.numLines - +a.numLines;
     });
     characterSelectData.forEach(d => selectCharacter.add(new Option(d.display,d.value)));
+    characterSelectData.forEach(d => selectCharacterCloud.add(new Option(d.display,d.value)));
     $('select[character]').multiselect();
     $('#selectCharacter').multiselect({
         columns: 8,
@@ -123,7 +133,7 @@ function initSelects(initData) {
 //handle season and episode selections
 $(document).ready(function(){
     $('#selectSeason').on('change', function() {
-        if($('#selectSeason').val() != -1){
+        if($('#selectSeason').val() > 0 && $('#selectSeason').val().length < 2){
             d3.csv('data/himym-dialogues.csv')
                 .then(data => {
                     var data = filterData(null,null,null,data);
@@ -139,7 +149,7 @@ $(document).ready(function(){
                     episodeSelectData.sort(function(a,b){
                         return +a.value - +b.value;
                     });
-                    episodeSelectData.unshift({"display": "Episodes " +  episodeSelectData[0].value + " - " + episodeSelectData[episodeSelectData.length - 1].value , "value": -1})
+                    episodeSelectData.unshift({"display": "Episodes " +  episodeSelectData[0].value + " - " + episodeSelectData[episodeSelectData.length - 1].value , "value": -1});
                     const selectEpisode = document.getElementById('selectEpisode');
                     selectEpisode.options.length = 0;
                     episodeSelectData.forEach(d => selectEpisode.add(new Option(d.display,d.value)));
@@ -159,6 +169,9 @@ $(document).ready(function(){
     });
     $('#selectCharacter').on('change', function() {
         updateChartsByCharacter($('#selectCharacter').val())
+    }); 
+    $('#selectCharacterCloud').on('change', function() {
+        updateChartsByCharacterCloud($('#selectCharacterCloud').val())
     }); 
 });
 
