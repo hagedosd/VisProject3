@@ -145,6 +145,7 @@ $(document).ready(function(){
                     episodeSelectData.sort(function(a,b){
                         return +a.value - +b.value;
                     });
+                    episodeSelectData.unshift({"display": "Episodes " +  episodeSelectData[0].value + " - " + episodeSelectData[episodeSelectData.length - 1].value , "value": -1});
                     const selectEpisode = document.getElementById('selectEpisode');
                     selectEpisode.options.length = 0;
                     episodeSelectData.forEach(d => selectEpisode.add(new Option(d.display,d.value)));
