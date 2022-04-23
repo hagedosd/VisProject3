@@ -29,6 +29,22 @@ function updateElement(id, value) {
     document.getElementById(id).innerHTML = value;
 }
 
+//generates random color for a character if character doesnt have a color, returns characters color given character
+const characterColors = []
+function getCharacterColor(character) {
+    var color = null;
+    characterColors.find(function(item,i){
+        if(item.character == character){
+            color = item.color;
+        }
+    })
+    if (color == null){
+        color = "#" + Math.floor(Math.random()*16777215).toString(16)
+        characterColors.push({"character" : character, "color": color})
+    }
+    return color;
+}
+
 //returns filtered data based on parameters, not well optimized but who cares?
 function filterData(character, season, episode, data) {
     let characters = []
@@ -49,14 +65,14 @@ function filterData(character, season, episode, data) {
                             });
                         }
                         else{
-                            e.characters.push({"name" : d.character, "numLines" : 1, "allLines": d.dialogue});
+                            e.characters.push({"name" : d.character, "numLines" : 1, "allLines": d.dialogue, "color" : getCharacterColor(d.character)});
                         }
                         return true;
                     }
                 });
             }
             else{
-                episodes.push({"season" : d.season, "episode" : d.episode, "numScenes" : d.scene, "characters" : [{"name" : d.character, "numLines" : 1, "allLines": d.dialogue}]});
+                episodes.push({"season" : d.season, "episode" : d.episode, "numScenes" : d.scene, "characters" : [{"name" : d.character, "numLines" : 1, "allLines": d.dialogue, "color" : getCharacterColor(d.character)}]});
             }
         }
     });

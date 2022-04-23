@@ -137,7 +137,7 @@ class ScatterPlot {
         var ret = [];
         episodeData.forEach(e =>{
             e.characters.forEach(c =>{
-                ret.push({'season': e.season ,'episode': e.episode,'numLines':c.numLines, 'color':'blue' , 'id': getEpisodeNum(e.season,e.episode,vis.allEpisodeList), 'str': "S"+e.season+"E"+e.episode, 'name': c.name}); // name
+                ret.push({'season': e.season ,'episode': e.episode,'numLines':c.numLines, 'color': c.color , 'id': getEpisodeNum(e.season,e.episode,vis.allEpisodeList), 'str': "S"+e.season+"E"+e.episode, 'name': c.name}); // name
             })
         })
         
@@ -195,6 +195,7 @@ class ScatterPlot {
         }
         */
         vis.scatterplotData = ret;
+        console.log(vis.scatterplotData);
         
         // console.log(vis.scatterplotData);
         
@@ -245,7 +246,7 @@ class ScatterPlot {
         .attr('cy', function (d) {return vis.yScale(d.numLines)})
         .attr('r', 3)
         .attr("transform", "translate(" + 110 + "," + 27 + ")")
-        .style("fill", function (d) {return fills[d.color]});
+        .style("fill", (d) => d.color);
         
 
         vis.circle.on('mouseover', (event, d) => {
