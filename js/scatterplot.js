@@ -35,6 +35,16 @@ function compare_id( a, b )
   return 0;
 }
 
+function getEpisodeNum(season,episode,data){
+    var ret = -1
+    data.find(function(item,i){
+        if(item.season == season && item.episode == episode){
+            ret = i;
+        }
+    })
+    return ret;
+}
+
 class ScatterPlot {
     constructor(_config, _data) {
         this.config = {
@@ -52,6 +62,21 @@ class ScatterPlot {
 
     initVis() {
         let vis = this;
+        
+        //quick and dirty solution to an indexing problem
+        vis.allEpisodeList = [];
+        var data = filterData(null,null,null,vis.data);
+        let episodes = data[0]
+        episodes.some(function (e){
+            if(!vis.allEpisodeList.some( s => (s.value == e.episode) && (s.season == e.season))){
+                vis.allEpisodeList.push({"season": +e.season, "episode": +e.episode});
+            }
+        });
+        vis.allEpisodeList.sort(function(a,b){
+            return a.season - b.season || a.episode - b.episode;
+        });
+        console.log(vis.allEpisodeList);
+        
         
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
@@ -103,9 +128,20 @@ class ScatterPlot {
         if (characters == undefined){
             characters=["Ted"];
         }
-        
         let vis = this;
-
+        var episodeData = filterData(characters,null,null,vis.data);
+        var episodeData = episodeData[0];
+        episodeData.sort(function(a,b){
+            return a.season - b.season || a.episode - b.episode;
+        });
+        var ret = [];
+        episodeData.forEach(e =>{
+            e.characters.forEach(c =>{
+                ret.push({'season': e.season ,'episode': e.episode,'numLines':c.numLines, 'color':'blue' , 'id': getEpisodeNum(e.season,e.episode,vis.allEpisodeList), 'str': "S"+e.season+"E"+e.episode, 'name': c.name}); // name
+            })
+        })
+        
+        /* 
         var tmp = [[],[],[],[],[],[],[],[],[]];
         var ret = [];
         //var characters = ["Ted",'Marshall'];
@@ -144,19 +180,20 @@ class ScatterPlot {
                 else
                 {
                     fixId(id);
-                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': characters[index]}); // name
+                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': d.character}); // name
                     count = 1;
                     id = d.id;
                 }
                 //bugfix :(
                 if(d.id == tmp_lst[tmp_lst.length - 1]['id'] && tmp_lst[tmp_lst.length - 1]['dialogue'] == d.dialogue){
                     fixId(id);
-                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': characters[index]}); // name
+                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': d.character}); // name
                     count = 1;
                     id = d.id;
                 }
             });      
         }
+        */
         vis.scatterplotData = ret;
         
         // console.log(vis.scatterplotData);

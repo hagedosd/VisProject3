@@ -34,7 +34,7 @@ function filterData(character, season, episode, data) {
     let characters = []
     let episodes = []
     data.forEach(d => {
-        if ((d.character === character || character === null) && (d.season === season || season === null || season.includes(d.season)) && (d.episode === episode || episode === null)){
+        if ((d.character === character || character === null || character.includes(d.character)) && (d.season === season || season === null || season.includes(d.season)) && (d.episode === episode || episode === null)){
             if (episodes.some(e => e.season === d.season && e.episode == d.episode)){
                 episodes.some(function(e){
                     if (e.season === d.season && e.episode == d.episode){
