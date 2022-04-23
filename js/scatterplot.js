@@ -39,8 +39,8 @@ class ScatterPlot {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 800,
-            containerHeight: _config.containerHeight || 400,
+            containerWidth: _config.containerWidth || 1200,
+            containerHeight: _config.containerHeight || 800,
             margin: _config.margin || {top: 50, right: 10, bottom: 75, left: 110},
             tooltipPadding: _config.tooltipPadding || 15
         }
@@ -183,7 +183,10 @@ class ScatterPlot {
 
     renderVis() {
         let vis = this;
-
+        //clear previous dots
+        if(vis.circle !== null && vis.circle !== undefined){
+            vis.circle.remove();
+        }
         // Add dots
         vis.circle = vis.svg.append('g')
         .selectAll("dot")
