@@ -89,13 +89,16 @@ class ScatterPlot {
        vis.updateVis();
     }
 
-    updateVis() {
+    updateVis(characters) {
+        if (characters == undefined){
+            characters=["Ted"];
+        }
         
         let vis = this;
 
         var tmp = [[],[],[],[],[],[],[],[],[]];
         var ret = [];
-        var characters = ["Ted",'Marshall'];
+        //var characters = ["Ted",'Marshall'];
     
         for(var index = 0; index < characters.length; index++)
         {
