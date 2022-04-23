@@ -44,42 +44,22 @@ class BarChartAppearances {
         vis.nameList = [];
 
         // Case for all seasons selected
-        if (vis.season == null){
-            console.log("All seasons selected.");
+        if (vis.season == null || vis.season == []){
             vis.filterResult = filterData(null, null, vis.episode, vis.data);
         }
-        // Case for any single season selected
-        else if(vis.season.length == 1){
-            console.log("Single season selected:", vis.season[0]);
-            vis.filterResult = filterData(null, vis.season[0], vis.episode, vis.data);
-        }
-        // Case for multiple seasons selected but not all
+        // Single or multiple seasons selected
         else{
-            console.log("Multiple seasons selected.")
-            for (let i = 0; i < vis.season.length; i++){
-                // vis.filterResultTemp = filterData(null, vis.season[i], vis.episode, vis.data);
-                // console.log("Character data for season", i, ":", vis.filterResultTemp);
-                if (i > 0)
-                    vis.filterResult = filterData(null, vis.season[i], vis.episode, vis.data);
-                else {
-                    vis.newFilterResult = filterData(null, vis.season[i], vis.episode, vis.data);
-                    vis.filterResult = merge(vis.filterResult, vis.newFilterResult);
-                    console.log("All data for seasons up to", i, ":", vis.filterResult);
-                }
-            }
+            vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
         }
+
         // Only keep character data from data query
         vis.characters = vis.filterResult[1];
-        console.log("All character info from selected seasons:", vis.characters);
-        // console.log("This is returned by the filter:", vis.filterResult);
-        // console.log("This is character data:", vis.characters);
-
+        
         // Sort all characters by appearance count
         vis.characters.sort(function(a,b){
             return +b.numAppearances - +a.numAppearances;
         });
         vis.characters = vis.characters.slice(0,10);
-        // console.log("This is top 10 character data:", vis.characters);
 
         // manually inserting into a list to be read later
         for (let i = 0; i < 10; i++){
@@ -172,27 +152,14 @@ class BarChartAppearances {
         let vis = this;
         let equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
         vis.chart.selectAll('*').remove();
-        // console.log("Seasons:", vis.season);
-        // console.log("Episode:". vis.episode);
 
         vis.season = season;
         vis.episode = episode;
-        // if (season != null)
-        //     vis.season = season.toString();
-        // if (episode != null)
-        //     vis.episode = episode
+
         if (equals(season, ['1', '2', '3', '4', '5', '6']))
             vis.season = null;
         if (episode == -1)
-            vis.episode = null;
-
-        console.log("Requested seasons:", season);
-        console.log("Requested episode:", episode);
-        console.log("****************************");
-        console.log("Processed seasons length:", vis.season);
-        console.log("Processed episode:", vis.episode);
-
-        
+            vis.episode = null;      
         vis.updateVis();
     }
 }

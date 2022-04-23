@@ -34,7 +34,7 @@ function filterData(character, season, episode, data) {
     let characters = []
     let episodes = []
     data.forEach(d => {
-        if ((d.character === character || character === null) && (d.season === season || season === null) && (d.episode === episode || episode === null)){
+        if ((d.character === character || character === null) && (d.season === season || season === null || season.includes(d.season)) && (d.episode === episode || episode === null)){
             if (episodes.some(e => e.season === d.season && e.episode == d.episode)){
                 episodes.some(function(e){
                     if (e.season === d.season && e.episode == d.episode){
@@ -88,7 +88,7 @@ function updateChartsBySeasonEpisode(season,episode){
 
     //chart.functionToUpdateBySeasonEpisode(season,episode)
     barChartAppearances.updateSeasonEpisode(season, episode);
-    // barChartLines.updateSeasonEpisode(season, episode);
+    barChartLines.updateSeasonEpisode(season, episode);
 }
 function updateChartsByCharacter(character){
     console.log(character);
@@ -165,21 +165,6 @@ $(document).ready(function(){
         updateChartsByCharacter($('#selectCharacter').val())
     }); 
 });
-
-// This function merges two objects so values of common keys are added
-function merge(...objects) {
-    const merged = objects.reduce((a, obj) => {
-      Object.entries(obj).forEach(([key, val]) => {
-        a[key] = (a[key] || 0) + val;
-      });
-      return a;
-    }, {});
-    return Object.fromEntries(
-      Object.entries(merged).sort(
-        (a, b) => b[1] - a[1]
-      )
-    );
-  }
 
 // let result = filterData(null, null, null, data);
 //     let episodes = result[0];

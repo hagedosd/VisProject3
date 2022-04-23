@@ -40,10 +40,18 @@ class BarChartLines {
 
     updateVis() {
         let vis = this;
-        vis.lineCounts = new Array;
+        vis.lineCounts = [];
         vis.nameList = []
 
-        vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
+        // Case for all seasons selected
+        if (vis.season == null || vis.season == []){
+            vis.filterResult = filterData(null, null, vis.episode, vis.data);
+        }
+        // Single or multiple seasons selected
+        else{
+            vis.filterResult = filterData(null, vis.season, vis.episode, vis.data);
+        }
+        
         // Only keep character data from data query
         vis.characters = vis.filterResult[1]
 
@@ -70,7 +78,6 @@ class BarChartLines {
 
         // init axis
         vis.xAxis = d3.axisBottom(vis.xScale)
-            // .tickFormat(d3.format("d")); // Remove thousand comma
             .tickSizeOuter(0);
         vis.yAxis = d3.axisLeft(vis.yScale)
             .tickSizeOuter(0);
@@ -143,17 +150,16 @@ class BarChartLines {
 
     updateSeasonEpisode(season, episode){
         let vis = this;
+        let equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
         vis.chart.selectAll('*').remove();
 
-        if (season != null)
-            vis.season = season.toString();
-        if (episode != null)
-            vis.episode = episode.toString();
-        if (season == -1)
+        vis.season = season;
+        vis.episode = episode;
+
+        if (equals(season, ['1', '2', '3', '4', '5', '6']))
             vis.season = null;
         if (episode == -1)
             vis.episode = null;
-        
         vis.updateVis();
     }
 }
