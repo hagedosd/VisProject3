@@ -90,8 +90,9 @@ function updateChartsBySeasonEpisode(season,episode){
     barChartAppearances.updateSeasonEpisode(season, episode);
     barChartLines.updateSeasonEpisode(season, episode);
 }
-function updateChartsByCharacter(character){
-    console.log(character);
+function updateChartsByCharacter(characters){
+    console.log(characters);
+    scatterplot.updateVis(characters);
     //chart.functionToUpdateByCharacter(character)
 }
 function updateChartsByCharacterCloud(character){

@@ -85,6 +85,16 @@ class ScatterPlot {
             .attr('font-weight', 'bold')
             .text("Number of Lines Per Episode");
 
+        // init axis groups
+        vis.xAxisGroup = vis.chart.append("g")
+            .attr('class', 'axis x-axis')
+            .attr('transform', `translate(0, ${vis.height+75})`);
+        
+
+        vis.yAxisGroup = vis.chart.append("g")
+            .attr('class', 'axis y-axis')
+            // .attr('transform', `translate(0, ${vis.height})`);
+            .attr('transform', `translate(0, 75)`);
 
        vis.updateVis();
     }
@@ -166,16 +176,6 @@ class ScatterPlot {
         vis.yAxis = d3.axisLeft(vis.yScale)
             .tickSizeOuter(0);
 
-        // init axis groups
-        vis.xAxisGroup = vis.chart.append("g")
-            .attr('class', 'axis x-axis')
-            .attr('transform', `translate(0, ${vis.height+75})`);
-        
-
-        vis.yAxisGroup = vis.chart.append("g")
-            .attr('class', 'axis y-axis')
-            // .attr('transform', `translate(0, ${vis.height})`);
-            .attr('transform', `translate(0, 75)`);
 
         vis.renderVis();
 
@@ -212,10 +212,10 @@ class ScatterPlot {
             <div><i>Episode: ${d.episode}</i></div>
             <div><i>Line Count: ${d.numLines}</i></div>
             `);
-    })
-    .on('mouseleave', () => {
-        d3.select('#tooltip').style('display', 'none');
-    });
+        })
+        .on('mouseleave', () => {
+            d3.select('#tooltip').style('display', 'none');
+        });
 
 
         // Update axis
