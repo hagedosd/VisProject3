@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>D3 Project Starter Template</title>
+    <title>TV Time</title>
     <meta charset="UTF-8">
     <link rel="icon" href="data:;base64,iVBORwOKGO=" />
     <link rel="stylesheet" href="css/style.css">
@@ -25,16 +25,18 @@
         <div id="topBarCharts" class="row">
             <!--Bar chart for character appearances-->
             <div id="barchartAppearancesDiv" class="column">
-                <h2>Appearances by Character in Season 1</h2> 
+                <h2>Appearances by Top 10 Characters</h2> 
                 <svg id="barchartAppearances"></svg>
             </div>
 
             <!--Bar chart for character line counts-->
             <div id="barchartLinesDiv" class="column">
-                <h2>Lines by Character in Season 1</h2> 
+                <h2>Lines by Top 10 Characters</h2> 
                 <svg id="barchartLines"></svg>
             </div>
         </div>
+
+        <hr>
 
         <div id="treemapsDiv" class="row">
             <!--Tree map for characters line counts-->
@@ -65,6 +67,8 @@
                 <span style="margin-left: 5px;">Number of characters shown: <strong id="treeLinesNumChars">0</strong></span>
                 <svg id="treemapLines"></svg>
             </div>
+            
+            <hr>
 
             <h3 id="selectCharacterCloudDiv">Character: <select id="selectCharacterCloud"></select></h3>
             <!--Word cloud-->
@@ -73,6 +77,7 @@
                 <svg id="wordCloud"></svg>
             </div>
         </div>
+        <hr>
         <h3 style="width:80%;margin:auto">Character: <select name="selectCharacter[]" multiple = "character" multiple id="selectCharacter"></select></h3>
 
         <div id="scatterplotDiv" class="row">
