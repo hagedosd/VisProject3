@@ -150,7 +150,6 @@ class WordCloud {
         vis.cloudWords = vis.chart.selectAll("text");
 
         vis.cloudWords.on('mouseover', (event,d) => {
-            console.log('mouseover d: ', d)
             d3.select('#tooltip')
                 .style('display', 'block')
                 .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
