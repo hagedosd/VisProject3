@@ -34,7 +34,7 @@ function filterData(character, season, episode, data) {
     let characters = []
     let episodes = []
     data.forEach(d => {
-        if ((d.character === character || character === null) && (d.season === season || season === null) && (d.episode === episode || episode === null)){
+        if ((d.character === character || character === null) && (d.season === season || season === null || season.includes(d.season)) && (d.episode === episode || episode === null)){
             if (episodes.some(e => e.season === d.season && e.episode == d.episode)){
                 episodes.some(function(e){
                     if (e.season === d.season && e.episode == d.episode){
@@ -65,6 +65,7 @@ function filterData(character, season, episode, data) {
             if (characters.some(c => c.name === d.name)){
                 characters.some(function(c){
                     if (c.name === d.name){
+                        c.numAppearances += 1;
                         c.numLines += d.numLines;
                         c.allLines += d.allLines;
                         return true;
@@ -72,7 +73,7 @@ function filterData(character, season, episode, data) {
                 });
             }
             else{
-                characters.push({"name" : d.name, "numLines" : d.numLines, "allLines": d.allLines});
+                characters.push({"name" : d.name, "numAppearances": 1, "numLines" : d.numLines, "allLines": d.allLines});
             }
         })
     });
@@ -82,9 +83,12 @@ function filterData(character, season, episode, data) {
 function updateChartsBySeasonEpisode(season,episode){
     //notes: -1 for season means all seasons/episodes (null episode)
     // -1 for episode means all episodes for season
-    console.log(season);
-    console.log(episode);
+    // console.log("Season:", season);
+    // console.log("Episode:", episode);
+
     //chart.functionToUpdateBySeasonEpisode(season,episode)
+    barChartAppearances.updateSeasonEpisode(season, episode);
+    barChartLines.updateSeasonEpisode(season, episode);
 }
 function updateChartsByCharacter(character){
     console.log(character);
