@@ -45,6 +45,10 @@ function getEpisodeNum(season,episode,data){
     return ret;
 }
 
+function getSeasonEpisodeFromNum(num,data){
+    return "S" + data[num].season + "E" + data[num].episode;
+}
+
 class ScatterPlot {
     constructor(_config, _data) {
         this.config = {
@@ -217,6 +221,7 @@ class ScatterPlot {
         // init axis
         vis.xAxis = d3.axisBottom(vis.xScale)
             // .tickFormat(d3.format("d")); // Remove thousand comma
+            .tickFormat((d,i) => getSeasonEpisodeFromNum(d,vis.allEpisodeList))
             .tickSizeOuter(0);
         vis.yAxis = d3.axisLeft(vis.yScale)
             .tickSizeOuter(0);
