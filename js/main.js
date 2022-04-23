@@ -90,6 +90,10 @@ function updateChartsByCharacter(character){
     console.log(character);
     //chart.functionToUpdateByCharacter(character)
 }
+function updateChartsByCharacterCloud(character){
+    console.log(character);
+    //chart.functionToUpdateByCharacter(character)
+}
 
 //formats select data and then populates selects
 function initSelects(initData) {
@@ -98,6 +102,7 @@ function initSelects(initData) {
     seasonSelectData.forEach(d => selectSeason.add(new Option(d.display,d.value)));
     const characterSelectData=[];
     const selectCharacter = document.getElementById('selectCharacter');
+    const selectCharacterCloud = document.getElementById('selectCharacterCloud');
     let characters = initData[1];
     characters.some(function(c){
         characterSelectData.push({"display": c.name + " (" + c.numLines + ")", "value": c.name, "numLines": c.numLines});
@@ -106,6 +111,7 @@ function initSelects(initData) {
         return +b.numLines - +a.numLines;
     });
     characterSelectData.forEach(d => selectCharacter.add(new Option(d.display,d.value)));
+    characterSelectData.forEach(d => selectCharacterCloud.add(new Option(d.display,d.value)));
     $('select[character]').multiselect();
     $('#selectCharacter').multiselect({
         columns: 8,
@@ -158,6 +164,9 @@ $(document).ready(function(){
     });
     $('#selectCharacter').on('change', function() {
         updateChartsByCharacter($('#selectCharacter').val())
+    }); 
+    $('#selectCharacterCloud').on('change', function() {
+        updateChartsByCharacterCloud($('#selectCharacterCloud').val())
     }); 
 });
 
