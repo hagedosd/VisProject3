@@ -2,9 +2,9 @@ class BarChartLines {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 800,
+            containerWidth: _config.containerWidth || 675,
             containerHeight: _config.containerHeight || 400,
-            margin: _config.margin || {top: 50, right: 10, bottom: 75, left: 110},
+            margin: _config.margin || {top: 50, right: 45, bottom: 75, left: 75},
             tooltipPadding: _config.tooltipPadding || 15
         }
   
@@ -17,6 +17,7 @@ class BarChartLines {
         let vis = this;
         vis.season = null;
         vis.episode = null;
+        vis.colors = ["#bf65bf", "#800080"];
 
         // This creates an array of length 10 with values equal to their index
         vis.characterNums = Array.from({length: 10}, (x, i) => i);
@@ -123,7 +124,7 @@ class BarChartLines {
             .enter()
             .append('rect')
                 .attr('class', 'bar')
-                .attr('fill', "#59981A")
+                .attr('fill', (d,i) => vis.colors[(i % 2)])
                 .attr('width', d => vis.xScale(vis.lineCounts[d]))
                 .attr('height', vis.yScale.bandwidth())
                 .attr('y', d => vis.yScale(vis.nameList[d])+75)
