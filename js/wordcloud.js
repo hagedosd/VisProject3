@@ -34,7 +34,7 @@ class WordCloud {
 
         // Scale text sizes between 10 and 100
         vis.textSizeScale = d3.scaleLinear()
-            .range([10, 100]);
+            .range([10, 80]);
 
         vis.updateVis();
     }
@@ -91,6 +91,12 @@ class WordCloud {
                 vis.uniqueWords.push(d);
             }
         });
+
+        // Limit to top 200 words so it fits in the cloud and loads faster
+        if (vis.wordCounts.length > 200) {
+            vis.wordCounts.sort((a,b) => b.size - a.size);
+            vis.wordCounts = vis.wordCounts.slice(0,200)
+        }
 
         // Set min/max word counts
         vis.wordCounts.forEach(d => {
