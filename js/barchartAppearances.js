@@ -42,9 +42,8 @@ class BarChartAppearances {
         let vis = this;
         vis.appList = [];
         vis.nameList = [];
-
         // Case for all seasons selected
-        if (vis.season == null || vis.season == []){
+        if (vis.season == null || vis.season.length == 0){
             vis.filterResult = filterData(null, null, vis.episode, vis.data);
         }
         // Single or multiple seasons selected
@@ -54,7 +53,6 @@ class BarChartAppearances {
 
         // Only keep character data from data query
         vis.characters = vis.filterResult[1];
-        
         // Sort all characters by appearance count
         vis.characters.sort(function(a,b){
             return +b.numAppearances - +a.numAppearances;
@@ -62,7 +60,7 @@ class BarChartAppearances {
         vis.characters = vis.characters.slice(0,10);
 
         // manually inserting into a list to be read later
-        for (let i = 0; i < 10; i++){
+        for (let i = 0; i < vis.characters.length; i++){
             vis.appList[i] = vis.characters[i]["numAppearances"];
             vis.nameList[i] = vis.characters[i]["name"];
         }

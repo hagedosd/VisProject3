@@ -79,7 +79,6 @@ class ScatterPlot {
         vis.allEpisodeList.sort(function(a,b){
             return a.season - b.season || a.episode - b.episode;
         });
-        console.log(vis.allEpisodeList);
         
         
 
@@ -199,8 +198,6 @@ class ScatterPlot {
         }
         */
         vis.scatterplotData = ret;
-        console.log(vis.scatterplotData);
-        
         // console.log(vis.scatterplotData);
         
         // scales

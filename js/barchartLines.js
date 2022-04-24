@@ -45,7 +45,7 @@ class BarChartLines {
         vis.nameList = []
 
         // Case for all seasons selected
-        if (vis.season == null || vis.season == []){
+        if (vis.season == null || vis.season.length == 0){
             vis.filterResult = filterData(null, null, vis.episode, vis.data);
         }
         // Single or multiple seasons selected
@@ -63,7 +63,7 @@ class BarChartLines {
         vis.characters = vis.characters.slice(0,10);
         
         // manually inserting into a list to be read later
-        for (let i = 0; i < 10; i++){
+        for (let i = 0; i < vis.characters.length; i++){
             vis.lineCounts[i] = vis.characters[i]["numLines"];
             vis.nameList[i] = vis.characters[i]["name"];
         }

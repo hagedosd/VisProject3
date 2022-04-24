@@ -107,7 +107,6 @@ function updateChartsBySeasonEpisode(season,episode){
     barChartLines.updateSeasonEpisode(season, episode);
 }
 function updateChartsByCharacter(characters){
-    console.log(characters);
     scatterplot.updateVis(characters);
     //chart.functionToUpdateByCharacter(character)
 }
