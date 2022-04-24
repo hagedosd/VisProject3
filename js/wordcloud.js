@@ -32,7 +32,7 @@ class WordCloud {
         // // Append group element that will contain our actual chart (see margin convention)
         vis.chart = vis.svg.append('g');
 
-        // Scale text sizes between 10 and 100
+        // Scale text sizes between 10 and 80
         vis.textSizeScale = d3.scaleLinear()
             .range([10, 80]);
 
@@ -119,6 +119,7 @@ class WordCloud {
 
         // Apply the scale
         vis.wordCounts.forEach(d => {
+            d.origSize = d.size;
             d.size = vis.textSizeScale(d.size);
         });
 
@@ -161,7 +162,7 @@ class WordCloud {
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .html(`
                 <div class="tooltip-title">${d.text}</div>
-                <div><i>was spoken ${vis.textSizeScale.invert(d.size)} times.</i></div>
+                <div><i>was spoken ${vis.textSizeScale.invert(d.size).toFixed(0)} times.</i></div>
                 `);
         })
         .on('mouseleave', () => {
