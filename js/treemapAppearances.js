@@ -50,7 +50,13 @@ class TreeMapAppearances {
         // process data
         vis.charAppearances = [];
             vis.filteredData.forEach(d => {
-                let numCharAppearances = d3.count(filterData(d.name,null,null,vis.data)[0], d => d.episode);
+                let numCharAppearances = 0;
+                let charData = filterData(d.name,null,null,vis.data)[1];
+                charData.forEach(j => {
+                    if (d.name == j.name) {
+                        numCharAppearances = j.numAppearances;
+                    }
+                })
                 if (numCharAppearances > vis.minAppearanceCount) {
                     vis.charAppearances.push({name: d.name, numAppearances: numCharAppearances});
                 }
