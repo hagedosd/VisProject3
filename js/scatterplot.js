@@ -35,12 +35,26 @@ function compare_id( a, b )
   return 0;
 }
 
+function getEpisodeNum(season,episode,data){
+    var ret = -1
+    data.find(function(item,i){
+        if(item.season == season && item.episode == episode){
+            ret = i;
+        }
+    })
+    return ret;
+}
+
+function getSeasonEpisodeFromNum(num,data){
+    return "S" + data[num].season + "E" + data[num].episode;
+}
+
 class ScatterPlot {
     constructor(_config, _data) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 800,
-            containerHeight: _config.containerHeight || 400,
+            containerWidth: _config.containerWidth || 1200,
+            containerHeight: _config.containerHeight || 800,
             margin: _config.margin || {top: 50, right: 10, bottom: 75, left: 110},
             tooltipPadding: _config.tooltipPadding || 15
         }
@@ -52,6 +66,20 @@ class ScatterPlot {
 
     initVis() {
         let vis = this;
+        
+        //quick and dirty solution to an indexing problem
+        vis.allEpisodeList = [];
+        var data = filterData(null,null,null,vis.data);
+        let episodes = data[0]
+        episodes.some(function (e){
+            if(!vis.allEpisodeList.some( s => (s.value == e.episode) && (s.season == e.season))){
+                vis.allEpisodeList.push({"season": +e.season, "episode": +e.episode});
+            }
+        });
+        vis.allEpisodeList.sort(function(a,b){
+            return a.season - b.season || a.episode - b.episode;
+        });
+        
         
 
         //set up the width and height of the area where visualizations will go- factoring in margins               
@@ -85,6 +113,16 @@ class ScatterPlot {
             .attr('font-weight', 'bold')
             .text("Number of Lines Per Episode");
 
+        // init axis groups
+        vis.xAxisGroup = vis.chart.append("g")
+            .attr('class', 'axis x-axis')
+            .attr('transform', `translate(0, ${vis.height+75})`);
+        
+
+        vis.yAxisGroup = vis.chart.append("g")
+            .attr('class', 'axis y-axis')
+            // .attr('transform', `translate(0, ${vis.height})`);
+            .attr('transform', `translate(0, 75)`);
 
        vis.updateVis();
     }
@@ -93,9 +131,20 @@ class ScatterPlot {
         if (characters == undefined){
             characters=["Ted"];
         }
-        
         let vis = this;
-
+        var episodeData = filterData(characters,null,null,vis.data);
+        var episodeData = episodeData[0];
+        episodeData.sort(function(a,b){
+            return a.season - b.season || a.episode - b.episode;
+        });
+        var ret = [];
+        episodeData.forEach(e =>{
+            e.characters.forEach(c =>{
+                ret.push({'season': e.season ,'episode': e.episode,'numLines':c.numLines, 'color': c.color , 'id': getEpisodeNum(e.season,e.episode,vis.allEpisodeList), 'str': "S"+e.season+"E"+e.episode, 'name': c.name}); // name
+            })
+        })
+        
+        /* 
         var tmp = [[],[],[],[],[],[],[],[],[]];
         var ret = [];
         //var characters = ["Ted",'Marshall'];
@@ -134,14 +183,21 @@ class ScatterPlot {
                 else
                 {
                     fixId(id);
-                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': characters[index]}); // name
+                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': d.character}); // name
+                    count = 1;
+                    id = d.id;
+                }
+                //bugfix :(
+                if(d.id == tmp_lst[tmp_lst.length - 1]['id'] && tmp_lst[tmp_lst.length - 1]['dialogue'] == d.dialogue){
+                    fixId(id);
+                    ret.push({'season': Math.floor(id/100) ,'episode': id%100,'numLines':count, 'color':index , 'id': fixId(id), 'str': "S"+Math.floor(id/100)+"E"+id%100, 'name': d.character}); // name
                     count = 1;
                     id = d.id;
                 }
             });      
         }
+        */
         vis.scatterplotData = ret;
-        
         // console.log(vis.scatterplotData);
         
         // scales
@@ -162,20 +218,11 @@ class ScatterPlot {
         // init axis
         vis.xAxis = d3.axisBottom(vis.xScale)
             // .tickFormat(d3.format("d")); // Remove thousand comma
+            .tickFormat((d,i) => getSeasonEpisodeFromNum(d,vis.allEpisodeList))
             .tickSizeOuter(0);
         vis.yAxis = d3.axisLeft(vis.yScale)
             .tickSizeOuter(0);
 
-        // init axis groups
-        vis.xAxisGroup = vis.chart.append("g")
-            .attr('class', 'axis x-axis')
-            .attr('transform', `translate(0, ${vis.height+75})`);
-        
-
-        vis.yAxisGroup = vis.chart.append("g")
-            .attr('class', 'axis y-axis')
-            // .attr('transform', `translate(0, ${vis.height})`);
-            .attr('transform', `translate(0, 75)`);
 
         vis.renderVis();
 
@@ -183,7 +230,10 @@ class ScatterPlot {
 
     renderVis() {
         let vis = this;
-
+        //clear previous dots
+        if(vis.circle !== null && vis.circle !== undefined){
+            vis.circle.remove();
+        }
         // Add dots
         vis.circle = vis.svg.append('g')
         .selectAll("dot")
@@ -198,7 +248,7 @@ class ScatterPlot {
         .attr('cy', function (d) {return vis.yScale(d.numLines)})
         .attr('r', 3)
         .attr("transform", "translate(" + 110 + "," + 27 + ")")
-        .style("fill", function (d) {return fills[d.color]});
+        .style("fill", (d) => d.color);
         
 
         vis.circle.on('mouseover', (event, d) => {
@@ -212,10 +262,10 @@ class ScatterPlot {
             <div><i>Episode: ${d.episode}</i></div>
             <div><i>Line Count: ${d.numLines}</i></div>
             `);
-    })
-    .on('mouseleave', () => {
-        d3.select('#tooltip').style('display', 'none');
-    });
+        })
+        .on('mouseleave', () => {
+            d3.select('#tooltip').style('display', 'none');
+        });
 
 
         // Update axis

@@ -29,12 +29,28 @@ function updateElement(id, value) {
     document.getElementById(id).innerHTML = value;
 }
 
+//generates random color for a character if character doesnt have a color, returns characters color given character
+const characterColors = []
+function getCharacterColor(character) {
+    var color = null;
+    characterColors.find(function(item,i){
+        if(item.character == character){
+            color = item.color;
+        }
+    })
+    if (color == null){
+        color = "#" + Math.floor(Math.random()*16777215).toString(16)
+        characterColors.push({"character" : character, "color": color})
+    }
+    return color;
+}
+
 //returns filtered data based on parameters, not well optimized but who cares?
 function filterData(character, season, episode, data) {
     let characters = []
     let episodes = []
     data.forEach(d => {
-        if ((d.character === character || character === null) && (d.season === season || season === null || season.includes(d.season)) && (d.episode === episode || episode === null)){
+        if ((d.character === character || character === null || character.includes(d.character)) && (d.season === season || season === null || season.includes(d.season)) && (d.episode === episode || episode === null)){
             if (episodes.some(e => e.season === d.season && e.episode == d.episode)){
                 episodes.some(function(e){
                     if (e.season === d.season && e.episode == d.episode){
@@ -49,14 +65,14 @@ function filterData(character, season, episode, data) {
                             });
                         }
                         else{
-                            e.characters.push({"name" : d.character, "numLines" : 1, "allLines": d.dialogue});
+                            e.characters.push({"name" : d.character, "numLines" : 1, "allLines": d.dialogue, "color" : getCharacterColor(d.character)});
                         }
                         return true;
                     }
                 });
             }
             else{
-                episodes.push({"season" : d.season, "episode" : d.episode, "numScenes" : d.scene, "characters" : [{"name" : d.character, "numLines" : 1, "allLines": d.dialogue}]});
+                episodes.push({"season" : d.season, "episode" : d.episode, "numScenes" : d.scene, "characters" : [{"name" : d.character, "numLines" : 1, "allLines": d.dialogue, "color" : getCharacterColor(d.character)}]});
             }
         }
     });
@@ -90,8 +106,8 @@ function updateChartsBySeasonEpisode(season,episode){
     barChartAppearances.updateSeasonEpisode(season, episode);
     barChartLines.updateSeasonEpisode(season, episode);
 }
-function updateChartsByCharacter(character){
-    console.log(character);
+function updateChartsByCharacter(characters){
+    scatterplot.updateVis(characters);
     //chart.functionToUpdateByCharacter(character)
 }
 function updateCloudCharacterSeason(character, season){
