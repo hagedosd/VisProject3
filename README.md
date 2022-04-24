@@ -1,5 +1,8 @@
 # VisProject3
+Team: Tunnel Snakes
+Nathaniel Alter, Steven Hagedorn, Gabe Rapaport, and Jakob Wardega
 Data visualizations class project 3 on TV show character speaking lines and interaction.
+
 ## C Goals:
 #### Bullet point 1: Top character
     Bar chart: episode appearances
