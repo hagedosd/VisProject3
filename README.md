@@ -1,7 +1,7 @@
 # VisProject3
 Team: Tunnel Snakes\
 Team members: Nathaniel Alter, Steven Hagedorn, Gabe Rapaport, and Jakob Wardega\
-Project 3 for data visualization class. Uses web scraped character dialouge from CBS sitcom *How I Met your Mother*.\
+Project 3 for data visualization class. Uses web scraped character dialouge from CBS sitcom *How I Met Your Mother*.\
 Scripts found [here](https://transcripts.foreverdreaming.org/viewforum.php?f=177).
 
 ## C Goals:
